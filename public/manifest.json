@@ -1,6 +1,6 @@
 {
   "name": "Last Reset Program",
-  "short_name": "LRP",
+  "short_name": "Last Reset",
   "description": "Your coaching portal",
   "start_url": "/",
   "display": "standalone",
