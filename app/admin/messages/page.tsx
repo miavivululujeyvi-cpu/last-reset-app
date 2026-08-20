@@ -48,7 +48,7 @@ export default function AdminMessages() {
   if (!admin) return null
 
   return (
-    <div style={{ marginLeft:'220px', minHeight:'100vh', background:'#0D0D0D' }}>
+    <div className="page-main">
       <Nav role="admin" />
       <div style={{ padding:'2rem', maxWidth:'900px' }}>
         <h1 style={{ fontSize:'1.5rem', fontWeight:'800', marginBottom:'0.25rem' }}>Messages</h1>

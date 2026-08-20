@@ -65,7 +65,7 @@ export default function CoachClock() {
   const totalMinutes = history.reduce((sum, e) => sum + (e.duration_minutes || 0), 0)
 
   return (
-    <div style={{ marginLeft:'220px', minHeight:'100vh', background:'#0D0D0D' }}>
+    <div className="page-main">
       <Nav role="coach" />
       <div style={{ padding:'2rem', maxWidth:'700px' }}>
         <h1 style={{ fontSize:'1.5rem', fontWeight:'800', marginBottom:'0.25rem' }}>Clock In / Out</h1>

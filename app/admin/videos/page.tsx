@@ -61,7 +61,7 @@ export default function AdminVideos() {
   const withVideo = ALL_EXERCISES.filter(e => videos[e.name]).length
 
   return (
-    <div style={{ marginLeft:'220px', minHeight:'100vh', background:'#0D0D0D' }}>
+    <div className="page-main">
       <Nav role="admin" />
       <div style={{ padding:'2rem', maxWidth:'740px' }}>
         <h1 style={{ fontSize:'1.5rem', fontWeight:'800', marginBottom:'0.25rem' }}>Exercise Videos</h1>

@@ -66,7 +66,7 @@ export default function CommunityPage() {
   if (!user) return null
 
   return (
-    <div style={{ marginLeft:'220px', minHeight:'100vh', background:'#0D0D0D' }}>
+    <div className="page-main">
       <Nav role={user.role} />
       <div style={{ padding:'2rem', maxWidth:'680px' }}>
         <h1 style={{ fontSize:'1.5rem', fontWeight:'800', marginBottom:'0.25rem' }}>Community</h1>

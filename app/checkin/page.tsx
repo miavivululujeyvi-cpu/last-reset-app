@@ -36,7 +36,7 @@ export default function CheckInPage() {
 
   if (todayEntry && !submitted) {
     return (
-      <div style={{ marginLeft:'220px', minHeight:'100vh', background:'#0D0D0D' }}>
+      <div className="page-main">
         <Nav role="client" />
         <div style={{ padding:'2rem', maxWidth:'540px' }}>
           <div className="card" style={{ textAlign:'center', padding:'2.5rem' }}>
@@ -52,7 +52,7 @@ export default function CheckInPage() {
 
   if (submitted) {
     return (
-      <div style={{ marginLeft:'220px', minHeight:'100vh', background:'#0D0D0D', display:'flex', alignItems:'center', justifyContent:'center' }}>
+      <div className="page-main" style={{ display:'flex', alignItems:'center', justifyContent:'center' }}>
         <Nav role="client" />
         <div style={{ textAlign:'center' }}>
           <CheckCircle size={56} style={{ color:'#4ade80', margin:'0 auto 1rem' }} />
@@ -64,7 +64,7 @@ export default function CheckInPage() {
   }
 
   return (
-    <div style={{ marginLeft:'220px', minHeight:'100vh', background:'#0D0D0D' }}>
+    <div className="page-main">
       <Nav role="client" />
       <div style={{ padding:'2rem', maxWidth:'540px' }}>
         <h1 style={{ fontSize:'1.5rem', fontWeight:'800', marginBottom:'0.25rem' }}>Daily Check-In</h1>

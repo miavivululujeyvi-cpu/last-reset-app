@@ -110,7 +110,7 @@ export default function PlanPage() {
   const totalCompleted = WORKOUT_PLAN.flatMap(g => g.exercises).filter(e => completed[e.name]).length
 
   return (
-    <div style={{ marginLeft:'220px', minHeight:'100vh', background:'#0D0D0D' }}>
+    <div className="page-main">
       <Nav role="client" />
       <div style={{ padding:'2rem', maxWidth:'740px' }}>
         <h1 style={{ fontSize:'1.5rem', fontWeight:'800', marginBottom:'0.25rem' }}>Workout Plan</h1>

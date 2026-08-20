@@ -31,7 +31,7 @@ export default function ClientDashboard() {
   const weightLost = startWeight && latestWeight ? (startWeight - latestWeight).toFixed(1) : null
 
   return (
-    <div style={{ marginLeft:'220px', minHeight:'100vh', background:'#0D0D0D' }}>
+    <div className="page-main">
       <Nav role="client" />
       <div style={{ padding:'2rem', maxWidth:'900px' }}>
         <h1 style={{ fontSize:'1.6rem', fontWeight:'800', marginBottom:'0.25rem' }}>

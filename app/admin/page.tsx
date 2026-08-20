@@ -43,7 +43,7 @@ export default function AdminOverview() {
   const net = (revenue.usd + revenue.chf * 1.26 - expenses).toFixed(0)
 
   return (
-    <div style={{ marginLeft:'220px', minHeight:'100vh', background:'#0D0D0D' }}>
+    <div className="page-main">
       <Nav role="admin" />
       <div style={{ padding:'2rem', maxWidth:'980px' }}>
         <h1 style={{ fontSize:'1.6rem', fontWeight:'800', marginBottom:'0.25rem' }}>

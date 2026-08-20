@@ -38,7 +38,7 @@ export default function CoachMessages() {
   if (!coach) return null
 
   return (
-    <div style={{ marginLeft:'220px', minHeight:'100vh', background:'#0D0D0D', display:'flex', flexDirection:'column' }}>
+    <div className="page-main" style={{ display:'flex', flexDirection:'column' }}>
       <Nav role="coach" />
       <div style={{ padding:'2rem', flex:1, display:'flex', flexDirection:'column', maxWidth:'700px', width:'100%' }}>
         <h1 style={{ fontSize:'1.4rem', fontWeight:'800', marginBottom:'0.25rem' }}>Messages</h1>

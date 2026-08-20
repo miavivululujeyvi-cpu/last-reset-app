@@ -115,7 +115,7 @@ export default function AICoachPage() {
   const todayWorkedOut = !!clientData?.todayWorkout
 
   return (
-    <div style={{ marginLeft: '220px', height: '100vh', display: 'flex', flexDirection: 'column', background: '#0D0D0D' }}>
+    <div className="page-main-flex">
       <Nav role="client" />
 
       {/* Header */}

@@ -93,7 +93,7 @@ export default function WorkoutPage() {
 
   if (saved) {
     return (
-      <div style={{ marginLeft:'220px', minHeight:'100vh', background:'#0D0D0D', display:'flex', alignItems:'center', justifyContent:'center' }}>
+      <div className="page-main" style={{ display:'flex', alignItems:'center', justifyContent:'center' }}>
         <Nav role="client" />
         <div style={{ textAlign:'center' }}>
           <CheckCircle size={56} style={{ color:'#4ade80', margin:'0 auto 1rem' }} />
@@ -104,7 +104,7 @@ export default function WorkoutPage() {
   }
 
   return (
-    <div style={{ marginLeft:'220px', minHeight:'100vh', background:'#0D0D0D' }}>
+    <div className="page-main">
       <Nav role="client" />
       <div style={{ padding:'2rem', maxWidth:'680px' }}>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'2rem' }}>

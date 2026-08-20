@@ -52,7 +52,7 @@ export default function AdminClients() {
   if (!admin) return null
 
   return (
-    <div style={{ marginLeft:'220px', minHeight:'100vh', background:'#0D0D0D' }}>
+    <div className="page-main">
       <Nav role="admin" />
       <div style={{ padding:'2rem', maxWidth:'1000px' }}>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'2rem' }}>

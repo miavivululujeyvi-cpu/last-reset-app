@@ -16,6 +16,62 @@ body {
   font-family: Arial, sans-serif;
 }
 
+/* Responsive page layout */
+.page-main {
+  margin-left: 220px;
+  min-height: 100vh;
+  background: var(--black);
+}
+.page-main-flex {
+  margin-left: 220px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--black);
+}
+
+/* Mobile nav */
+.nav-sidebar {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: 220px;
+  background: #111;
+  border-right: 1px solid #2a2a2a;
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+  transition: transform 0.25s ease;
+}
+.nav-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 49;
+}
+.nav-hamburger {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 60;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.45rem 0.6rem;
+  cursor: pointer;
+  color: var(--yellow);
+}
+
+@media (max-width: 768px) {
+  .page-main { margin-left: 0; }
+  .page-main-flex { margin-left: 0; }
+  .nav-sidebar { transform: translateX(-100%); }
+  .nav-sidebar.nav-open { transform: translateX(0); }
+  .nav-backdrop.nav-open { display: block; }
+  .nav-hamburger { display: flex; align-items: center; }
+}
+
 .btn-yellow {
   background: var(--yellow);
   color: var(--black);
