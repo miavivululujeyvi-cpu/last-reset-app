@@ -91,6 +91,7 @@ export interface Post {
 export interface AIMessage {
   role: 'user' | 'assistant'
   content: string
+  image_url?: string
   created_at: string
 }
 

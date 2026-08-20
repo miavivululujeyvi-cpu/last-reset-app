@@ -7,7 +7,7 @@ import {
   getAIMessages, saveAIMessage, clearAIMessages
 } from '@/lib/store'
 import { AIMessage } from '@/lib/types'
-import { Send, Bot, RotateCcw, Zap } from 'lucide-react'
+import { Send, Bot, RotateCcw, Zap, Camera } from 'lucide-react'
 
 const QUICK_PROMPTS = [
   "I just woke up. What should I do first?",
@@ -18,6 +18,30 @@ const QUICK_PROMPTS = [
   "How am I doing this week?",
 ]
 
+function compressImage(file: File): Promise<string> {
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        const MAX = 800
+        let { width, height } = img
+        if (width > MAX || height > MAX) {
+          if (width > height) { height = (height / width) * MAX; width = MAX }
+          else { width = (width / height) * MAX; height = MAX }
+        }
+        canvas.width = width
+        canvas.height = height
+        canvas.getContext('2d')!.drawImage(img, 0, 0, width, height)
+        resolve(canvas.toDataURL('image/jpeg', 0.75))
+      }
+      img.src = e.target!.result as string
+    }
+    reader.readAsDataURL(file)
+  })
+}
+
 export default function AICoachPage() {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
@@ -26,11 +50,11 @@ export default function AICoachPage() {
   const [loading, setLoading] = useState(false)
   const [clientData, setClientData] = useState<any>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const s = getSession()
     if (!s || s.role !== 'client') { router.replace('/login'); return }
-    // Only AI plan clients — or any client for now (admin can grant access)
     setUser(s)
     const checkins = getCheckInsForClient(s.id)
     const workouts = getWorkoutsForClient(s.id)
@@ -46,7 +70,6 @@ export default function AICoachPage() {
     if (saved.length > 0) {
       setMessages(saved)
     } else {
-      // Opening greeting from AI
       const greeting: AIMessage = {
         role: 'assistant',
         content: `Hey ${s.name}! I'm your AI coach. I have access to your weight history and check-ins, so I can give you real feedback. Not generic advice.\n\nWhat's going on today? Did you weigh in this morning?`,
@@ -61,11 +84,16 @@ export default function AICoachPage() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, loading])
 
-  async function sendMessage(text: string) {
-    if (!text.trim() || loading || !user || !clientData) return
+  async function sendMessage(text: string, imageUrl?: string) {
+    if ((!text.trim() && !imageUrl) || loading || !user || !clientData) return
     setInput('')
 
-    const userMsg: AIMessage = { role: 'user', content: text.trim(), created_at: new Date().toISOString() }
+    const userMsg: AIMessage = {
+      role: 'user',
+      content: text.trim() || 'Here is what I ate.',
+      image_url: imageUrl,
+      created_at: new Date().toISOString(),
+    }
     const newMessages = [...messages, userMsg]
     setMessages(newMessages)
     saveAIMessage(user.id, userMsg)
@@ -76,7 +104,7 @@ export default function AICoachPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: newMessages.map(m => ({ role: m.role, content: m.content })),
+          messages: newMessages.map(m => ({ role: m.role, content: m.content, image_url: m.image_url })),
           clientData,
         }),
       })
@@ -85,11 +113,19 @@ export default function AICoachPage() {
       setMessages(prev => [...prev, aiMsg])
       saveAIMessage(user.id, aiMsg)
     } catch {
-      const errMsg: AIMessage = { role: 'assistant', content: "Connection issue. Try again.", created_at: new Date().toISOString() }
+      const errMsg: AIMessage = { role: 'assistant', content: 'Connection issue. Try again.', created_at: new Date().toISOString() }
       setMessages(prev => [...prev, errMsg])
     } finally {
       setLoading(false)
     }
+  }
+
+  async function handlePhotoSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    e.target.value = ''
+    const compressed = await compressImage(file)
+    await sendMessage('Here is what I ate. Please analyze it.', compressed)
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -133,12 +169,11 @@ export default function AICoachPage() {
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          {/* Daily status pills */}
           <span className={`badge badge-${todayChecked ? 'green' : 'red'}`}>
-            {todayChecked ? 'Checked in' : 'No check-in today'}
+            {todayChecked ? 'Checked in' : 'No check-in'}
           </span>
           <span className={`badge badge-${todayWorkedOut ? 'green' : 'gray'}`}>
-            {todayWorkedOut ? 'Workout done' : 'No workout yet'}
+            {todayWorkedOut ? 'Workout done' : 'No workout'}
           </span>
           <button onClick={handleClear}
             style={{ background: 'transparent', border: 'none', color: '#444', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem' }}>
@@ -148,7 +183,7 @@ export default function AICoachPage() {
       </div>
 
       {/* Messages */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem 2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem 1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {messages.map((m, i) => (
           <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start', alignItems: 'flex-end', gap: '0.6rem' }}>
             {m.role === 'assistant' && (
@@ -156,18 +191,25 @@ export default function AICoachPage() {
                 <Bot size={14} style={{ color: '#FFE000' }} />
               </div>
             )}
-            <div style={{
-              maxWidth: '72%',
-              padding: '0.75rem 1rem',
-              borderRadius: m.role === 'user' ? '16px 16px 2px 16px' : '16px 16px 16px 2px',
-              background: m.role === 'user' ? '#FFE000' : '#1e1e1e',
-              color: m.role === 'user' ? '#0D0D0D' : '#e5e5e5',
-              fontSize: '0.93rem',
-              lineHeight: '1.55',
-              whiteSpace: 'pre-wrap',
-              border: m.role === 'assistant' ? '1px solid #2a2a2a' : 'none',
-            }}>
-              {m.content}
+            <div style={{ maxWidth: '72%', display: 'flex', flexDirection: 'column', gap: '0.4rem', alignItems: m.role === 'user' ? 'flex-end' : 'flex-start' }}>
+              {m.image_url && (
+                <img src={m.image_url} alt="Food photo"
+                  style={{ maxWidth: '220px', borderRadius: '12px', border: '2px solid #FFE000' }} />
+              )}
+              {m.content && (
+                <div style={{
+                  padding: '0.75rem 1rem',
+                  borderRadius: m.role === 'user' ? '16px 16px 2px 16px' : '16px 16px 16px 2px',
+                  background: m.role === 'user' ? '#FFE000' : '#1e1e1e',
+                  color: m.role === 'user' ? '#0D0D0D' : '#e5e5e5',
+                  fontSize: '0.93rem',
+                  lineHeight: '1.55',
+                  whiteSpace: 'pre-wrap',
+                  border: m.role === 'assistant' ? '1px solid #2a2a2a' : 'none',
+                }}>
+                  {m.content}
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -191,7 +233,7 @@ export default function AICoachPage() {
 
       {/* Quick prompts */}
       {messages.length <= 2 && (
-        <div style={{ padding: '0 2rem 0.75rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap', flexShrink: 0 }}>
+        <div style={{ padding: '0 1.25rem 0.75rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap', flexShrink: 0 }}>
           {QUICK_PROMPTS.map(p => (
             <button key={p} onClick={() => sendMessage(p)}
               style={{ background: 'rgba(255,224,0,0.06)', border: '1px solid #2a2a1a', borderRadius: '20px', padding: '0.35rem 0.85rem', fontSize: '0.8rem', color: '#ccc', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem', whiteSpace: 'nowrap' }}>
@@ -202,8 +244,26 @@ export default function AICoachPage() {
       )}
 
       {/* Input */}
-      <div style={{ padding: '1rem 2rem 1.5rem', borderTop: '1px solid #1a1a1a', flexShrink: 0 }}>
-        <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '0.75rem' }}>
+      <div style={{ padding: '1rem 1.25rem 1.5rem', borderTop: '1px solid #1a1a1a', flexShrink: 0 }}>
+        {/* Food photo hint */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.6rem' }}>
+          <Camera size={13} style={{ color: '#FFE000' }} />
+          <span style={{ fontSize: '0.75rem', color: '#666' }}>Tap the camera to send a food photo for calorie and macro analysis</span>
+        </div>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '0.6rem' }}>
+          {/* Camera button */}
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            style={{ display: 'none' }}
+            onChange={handlePhotoSelect}
+          />
+          <button type="button" onClick={() => fileRef.current?.click()} disabled={loading}
+            style={{ background: 'rgba(255,224,0,0.1)', border: '1px solid rgba(255,224,0,0.3)', borderRadius: '8px', padding: '0.6rem 0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, opacity: loading ? 0.5 : 1 }}>
+            <Camera size={18} style={{ color: '#FFE000' }} />
+          </button>
           <input
             className="input"
             value={input}
@@ -211,7 +271,6 @@ export default function AICoachPage() {
             placeholder="Talk to your AI coach..."
             disabled={loading}
             style={{ flex: 1 }}
-            autoFocus
           />
           <button className="btn-yellow" type="submit" disabled={!input.trim() || loading}
             style={{ padding: '0.6rem 1.1rem', opacity: !input.trim() || loading ? 0.5 : 1 }}>
