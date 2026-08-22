@@ -189,6 +189,24 @@ export function clearAIMessages(clientId: string) {
   localStorage.setItem(AI_CONV_KEY, JSON.stringify(all))
 }
 
+// ── Cycle tracker ─────────────────────────────────────────────────────────────
+const CYCLE_KEY = 'lrp_cycle'
+
+export function getCycleData(clientId: string): { last_period: string; cycle_length: number } | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const all = JSON.parse(localStorage.getItem(CYCLE_KEY) || '{}')
+    return all[clientId] || null
+  } catch { return null }
+}
+
+export function saveCycleData(clientId: string, last_period: string, cycle_length: number) {
+  if (typeof window === 'undefined') return
+  const all = JSON.parse(localStorage.getItem(CYCLE_KEY) || '{}')
+  all[clientId] = { last_period, cycle_length }
+  localStorage.setItem(CYCLE_KEY, JSON.stringify(all))
+}
+
 // ── Community posts ────────────────────────────────────────────────────────────
 const POSTS_KEY = 'lrp_posts'
 const VIDEOS_KEY = 'lrp_videos'

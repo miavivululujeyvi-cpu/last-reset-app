@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { setSession, getSession } from '@/lib/store'
-import { Home, Camera, Dumbbell, TrendingUp, Users, MessageSquare, Clock, Settings, LogOut, Globe, ListChecks, Bot, Menu, X } from 'lucide-react'
+import { Home, Camera, Dumbbell, TrendingUp, Users, MessageSquare, Clock, Settings, LogOut, Globe, ListChecks, Bot, Menu, X, Heart } from 'lucide-react'
 
 interface NavItem { label: string; href: string; icon: React.ReactNode }
 
@@ -13,6 +13,7 @@ const clientNav: NavItem[] = [
   { label:'Workout Plan', href:'/plan', icon:<ListChecks size={18}/> },
   { label:'Log Workout', href:'/workout', icon:<Dumbbell size={18}/> },
   { label:'Progress', href:'/progress', icon:<TrendingUp size={18}/> },
+  { label:'Cycle Tracker', href:'/cycle', icon:<Heart size={18}/> },
   { label:'Community', href:'/community', icon:<Globe size={18}/> },
 ]
 
