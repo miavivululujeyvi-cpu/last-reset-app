@@ -156,109 +156,132 @@ export default function ProgressPage() {
         )}
 
         {tab === 'report' && (() => {
-          // Last 7 days
-          const days: string[] = []
-          for (let i = 6; i >= 0; i--) {
-            const d = new Date(); d.setDate(d.getDate() - i)
-            days.push(d.toISOString().split('T')[0])
+          // ── Helpers ──────────────────────────────────────────────────────
+          function weekDays(monStart: string): string[] {
+            return Array.from({ length: 7 }, (_, i) => {
+              const d = new Date(monStart + 'T12:00:00'); d.setDate(d.getDate() + i)
+              return d.toISOString().split('T')[0]
+            })
           }
-          const checkinDays = days.filter(d => checkins.some(c => c.date === d))
-          const workoutDays = days.filter(d => workouts.some(w => w.date === d))
-          const mealDays   = days.filter(d => meals.some(m => m.date === d))
-
-          const checkinPct  = Math.round((checkinDays.length / 7) * 100)
-          const workoutPct  = Math.round((workoutDays.length / 3) * 100) // goal: 3x/week
-          const mealPct     = Math.round((mealDays.length / 7) * 100)
-
-          const ratedMeals = meals.filter(m => m.rating != null && m.date >= days[0])
-          const avgRating  = ratedMeals.length > 0 ? (ratedMeals.reduce((s, m) => s + m.rating!, 0) / ratedMeals.length) : null
-
-          const overall = Math.round((checkinPct + Math.min(workoutPct, 100) + mealPct) / 3)
-          function grade(pct: number) {
-            if (pct >= 90) return { letter: 'A', color: '#16a34a' }
-            if (pct >= 75) return { letter: 'B', color: '#22c55e' }
-            if (pct >= 60) return { letter: 'C', color: '#f59e0b' }
-            if (pct >= 40) return { letter: 'D', color: '#f97316' }
-            return { letter: 'F', color: '#dc2626' }
+          function currentMonday(): string {
+            const now = new Date(); const day = now.getDay()
+            now.setDate(now.getDate() - (day === 0 ? 6 : day - 1))
+            return now.toISOString().split('T')[0]
           }
-          const g = grade(overall)
+          function weekLabel(monStart: string): string {
+            const s = new Date(monStart + 'T12:00:00')
+            const e = new Date(monStart + 'T12:00:00'); e.setDate(e.getDate() + 6)
+            const fmt = (d: Date) => d.toLocaleDateString('en', { month:'short', day:'numeric' })
+            return `${fmt(s)} – ${fmt(e)}`
+          }
+          function scoreColor(s: number) {
+            if (s >= 9) return '#16a34a'
+            if (s >= 7) return '#22c55e'
+            if (s >= 5) return '#f59e0b'
+            if (s >= 3) return '#f97316'
+            return '#dc2626'
+          }
+          function calcWeek(monStart: string) {
+            const days = weekDays(monStart)
+            const ciDays  = days.filter(d => checkins.some(c => c.date === d)).length
+            const woDays  = days.filter(d => workouts.some(w => w.date === d)).length
+            const rated   = meals.filter(m => days.includes(m.date) && m.rating != null)
+            const ciScore  = parseFloat(((ciDays / 7) * 10).toFixed(1))
+            const woScore  = parseFloat((Math.min(woDays / 3, 1) * 10).toFixed(1))
+            const mlScore  = rated.length > 0
+              ? parseFloat((rated.reduce((s, m) => s + m.rating!, 0) / rated.length).toFixed(1))
+              : null
+            const nums = [ciScore, woScore, ...(mlScore != null ? [mlScore] : [])]
+            const overall = nums.length ? parseFloat((nums.reduce((a, v) => a + v, 0) / nums.length).toFixed(1)) : null
+            return { days, ciScore, woScore, mlScore, overall, ciDays, woDays, ratedCount: rated.length }
+          }
+
+          // Build last 6 weeks (current first)
+          const mon = currentMonday()
+          const weeks = Array.from({ length: 6 }, (_, i) => {
+            const d = new Date(mon + 'T12:00:00'); d.setDate(d.getDate() - i * 7)
+            return d.toISOString().split('T')[0]
+          })
+
+          const current = calcWeek(weeks[0])
 
           return (
             <div style={{ display:'flex', flexDirection:'column', gap:'1rem' }}>
-              {/* Overall grade */}
-              <div className="hero-card" style={{ textAlign:'center', padding:'2rem' }}>
-                <div style={{ fontSize:'0.78rem', color:'#AAA', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:'0.5rem' }}>This Week</div>
-                <div style={{ fontSize:'5rem', fontWeight:'900', color: g.letter === 'A' ? '#FFE000' : '#FFFFFF', lineHeight:1, marginBottom:'0.35rem' }}>{g.letter}</div>
-                <div style={{ fontSize:'0.88rem', color:'#AAA' }}>Overall consistency score: {overall}%</div>
+
+              {/* ── This week's big card ── */}
+              <div className="hero-card">
+                <div style={{ fontSize:'0.72rem', color:'#AAA', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:'0.85rem' }}>
+                  This Week · {weekLabel(weeks[0])}
+                </div>
+
+                {/* Three scores */}
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'0.75rem', marginBottom:'1.25rem' }}>
+                  {[
+                    { label:'Meals', emoji:'🍽️', score: current.mlScore, sub: current.ratedCount > 0 ? `${current.ratedCount} rated` : 'Pending rating', pending: current.mlScore == null },
+                    { label:'Workouts', emoji:'💪', score: current.woScore, sub: `${current.woDays} of 3 sessions`, pending: false },
+                    { label:'Check-ins', emoji:'⚖️', score: current.ciScore, sub: `${current.ciDays} of 7 days`, pending: false },
+                  ].map(c => (
+                    <div key={c.label} style={{ background:'rgba(255,255,255,0.07)', borderRadius:'12px', padding:'0.85rem 0.5rem', textAlign:'center' }}>
+                      <div style={{ fontSize:'1.1rem', marginBottom:'0.3rem' }}>{c.emoji}</div>
+                      <div style={{ fontSize:'1.6rem', fontWeight:'900', color: c.pending ? '#666' : scoreColor(c.score!), lineHeight:1 }}>
+                        {c.pending ? '—' : c.score}
+                        {!c.pending && <span style={{ fontSize:'0.65rem', color:'#888', fontWeight:'400' }}>/10</span>}
+                      </div>
+                      <div style={{ fontSize:'0.68rem', color:'#888', marginTop:'0.3rem', fontWeight:'600' }}>{c.label}</div>
+                      <div style={{ fontSize:'0.6rem', color:'#666', marginTop:'0.1rem' }}>{c.sub}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Overall */}
+                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'0.85rem 1rem', background:'rgba(255,255,255,0.06)', borderRadius:'12px' }}>
+                  <span style={{ fontSize:'0.82rem', color:'#AAA', fontWeight:'600' }}>Weekly Score</span>
+                  {current.overall != null ? (
+                    <div style={{ display:'flex', alignItems:'baseline', gap:'0.25rem' }}>
+                      <span style={{ fontSize:'2rem', fontWeight:'900', color: scoreColor(current.overall) }}>{current.overall}</span>
+                      <span style={{ fontSize:'0.85rem', color:'#666' }}>/10</span>
+                    </div>
+                  ) : (
+                    <span style={{ color:'#555', fontSize:'0.85rem' }}>In progress</span>
+                  )}
+                </div>
               </div>
 
-              {/* Category breakdown */}
-              {[
-                { label:'Daily Check-ins', emoji:'⚖️', done:checkinDays.length, goal:7, pct:checkinPct, detail:`${checkinDays.length} of 7 days` },
-                { label:'Workouts', emoji:'💪', done:workoutDays.length, goal:3, pct:Math.min(workoutPct,100), detail:`${workoutDays.length} of 3+ sessions` },
-                { label:'Meal Logging', emoji:'📸', done:mealDays.length, goal:7, pct:mealPct, detail:`${mealDays.length} of 7 days` },
-              ].map(cat => {
-                const cg = grade(cat.pct)
-                return (
-                  <div key={cat.label} className="card">
-                    <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.75rem' }}>
-                      <div>
-                        <span style={{ fontWeight:'700', fontSize:'0.95rem' }}>{cat.emoji} {cat.label}</span>
-                        <div style={{ fontSize:'0.75rem', color:'#888', marginTop:'0.15rem' }}>{cat.detail}</div>
-                      </div>
-                      <div style={{ fontSize:'1.5rem', fontWeight:'900', color:cg.color }}>{cg.letter}</div>
-                    </div>
-                    <div style={{ background:'#ECEEF5', borderRadius:'20px', height:'8px', overflow:'hidden' }}>
-                      <div style={{ background: cg.color, height:'100%', width:`${cat.pct}%`, borderRadius:'20px', transition:'width 0.4s' }}/>
-                    </div>
-                    <div style={{ textAlign:'right', fontSize:'0.72rem', color:'#AAA', marginTop:'0.35rem' }}>{cat.pct}%</div>
-                  </div>
-                )
-              })}
-
-              {/* Meal rating summary */}
-              {avgRating != null && (
-                <div className="card">
-                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                    <div>
-                      <div style={{ fontWeight:'700', fontSize:'0.95rem' }}>🍽️ Meal Quality</div>
-                      <div style={{ fontSize:'0.75rem', color:'#888', marginTop:'0.15rem' }}>Average coach rating this week</div>
-                    </div>
-                    <div style={{ display:'flex', alignItems:'center', gap:'0.35rem' }}>
-                      <Star size={18} fill="#FFE000" color="#FFE000"/>
-                      <span style={{ fontSize:'1.4rem', fontWeight:'800', color:'#1A1A1A' }}>{avgRating.toFixed(1)}</span>
-                      <span style={{ fontSize:'0.8rem', color:'#AAA' }}>/10</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Day-by-day grid */}
-              <div className="card">
-                <div style={{ fontWeight:'700', marginBottom:'0.85rem', fontSize:'0.9rem' }}>Daily Activity This Week</div>
-                <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:'0.35rem', textAlign:'center' }}>
-                  {days.map(d => {
-                    const label = new Date(d + 'T12:00:00').toLocaleDateString('en', { weekday:'narrow' })
-                    const hasCheckin = checkins.some(c => c.date === d)
-                    const hasMeal    = meals.some(m => m.date === d)
-                    const hasWorkout = workouts.some(w => w.date === d)
-                    const score = [hasCheckin, hasMeal, hasWorkout].filter(Boolean).length
-                    const bg = score === 3 ? '#FFE000' : score === 2 ? '#FFF59D' : score === 1 ? '#F4F5FA' : '#FFFFFF'
+              {/* ── Week-by-week history ── */}
+              <div className="card" style={{ padding:'1rem' }}>
+                <div style={{ fontWeight:'800', fontSize:'0.9rem', marginBottom:'1rem' }}>Week by Week</div>
+                <div style={{ display:'flex', flexDirection:'column', gap:'0.6rem' }}>
+                  {weeks.map((wk, idx) => {
+                    const w = calcWeek(wk)
+                    const isThis = idx === 0
                     return (
-                      <div key={d} style={{ display:'flex', flexDirection:'column', gap:'0.25rem', alignItems:'center' }}>
-                        <div style={{ fontSize:'0.65rem', color:'#AAA', fontWeight:'600' }}>{label}</div>
-                        <div style={{ width:'36px', height:'36px', borderRadius:'8px', background:bg, border:'1px solid #E2E4EC', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'0.7rem', fontWeight:'700', color: score === 3 ? '#1A1A1A' : '#888' }}>
-                          {score}/3
+                      <div key={wk} style={{ display:'flex', alignItems:'center', gap:'0.75rem', padding:'0.7rem 0.85rem', borderRadius:'10px', background: isThis ? 'rgba(255,224,0,0.07)' : '#F8F9FC', border: isThis ? '1px solid rgba(255,224,0,0.2)' : '1px solid transparent' }}>
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <div style={{ fontSize:'0.78rem', fontWeight:'700', color:'#1A1A1A', marginBottom:'0.25rem' }}>
+                            {isThis ? 'This week' : weekLabel(wk)}
+                          </div>
+                          <div style={{ display:'flex', gap:'0.75rem', fontSize:'0.68rem', color:'#999' }}>
+                            <span>🍽️ {w.mlScore != null ? `${w.mlScore}/10` : '—'}</span>
+                            <span>💪 {w.woScore}/10</span>
+                            <span>⚖️ {w.ciScore}/10</span>
+                          </div>
                         </div>
-                        <div style={{ fontSize:'0.6rem', color:'#CCC' }}>
-                          {hasCheckin ? '⚖' : ''}{hasMeal ? '📸' : ''}{hasWorkout ? '💪' : ''}
+                        <div style={{ textAlign:'right', flexShrink:0 }}>
+                          {w.overall != null ? (
+                            <>
+                              <div style={{ fontSize:'1.3rem', fontWeight:'900', color: scoreColor(w.overall), lineHeight:1 }}>{w.overall}</div>
+                              <div style={{ fontSize:'0.62rem', color:'#AAA' }}>/10</div>
+                            </>
+                          ) : (
+                            <div style={{ fontSize:'0.75rem', color:'#CCC' }}>—</div>
+                          )}
                         </div>
                       </div>
                     )
                   })}
                 </div>
-                <div style={{ marginTop:'0.85rem', display:'flex', gap:'1rem', fontSize:'0.72rem', color:'#AAA', justifyContent:'center' }}>
-                  <span>⚖ Check-in</span><span>📸 Meals</span><span>💪 Workout</span>
+                <div style={{ marginTop:'0.85rem', padding:'0.6rem 0.85rem', background:'#F4F5FA', borderRadius:'8px', fontSize:'0.72rem', color:'#888', lineHeight:'1.5' }}>
+                  Meals rated by your coach · 3 workouts/week = 10/10 · 7 check-ins/week = 10/10
                 </div>
               </div>
             </div>
