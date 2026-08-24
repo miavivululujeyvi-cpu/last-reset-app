@@ -96,3 +96,17 @@ export interface AIMessage {
 }
 
 export type PlanType = 'human' | 'ai'
+
+export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack'
+
+export interface MealLog {
+  id: string
+  client_id: string
+  photo: string        // base64 data URL
+  meal_type: MealType
+  description?: string
+  date: string
+  logged_at: string
+  rating?: number      // 1-10, set by coach or admin
+  coach_note?: string
+}

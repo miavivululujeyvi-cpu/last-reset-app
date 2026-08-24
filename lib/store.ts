@@ -1,5 +1,5 @@
 // Local data store — no backend needed to start. Replace with Supabase calls later.
-import { User, CheckIn, WorkoutLog, Message, ClockEntry, Post, AIMessage } from './types'
+import { User, CheckIn, WorkoutLog, Message, ClockEntry, Post, AIMessage, MealLog } from './types'
 
 const USERS_KEY = 'lrp_users'
 const CHECKINS_KEY = 'lrp_checkins'
@@ -247,6 +247,45 @@ export function setVideoUrl(exerciseName: string, url: string) {
   const videos = getVideoUrls()
   videos[exerciseName] = url
   if (typeof window !== 'undefined') localStorage.setItem(VIDEOS_KEY, JSON.stringify(videos))
+}
+
+// ── Meal logs ──────────────────────────────────────────────────────────────────
+const MEALS_KEY = 'lrp_meals'
+
+export function getMeals(): MealLog[] { return load<MealLog>(MEALS_KEY) }
+
+export function getMealsForClient(clientId: string): MealLog[] {
+  return getMeals().filter(m => m.client_id === clientId).sort((a, b) => b.logged_at.localeCompare(a.logged_at))
+}
+
+export function getMealsForDate(clientId: string, date: string): MealLog[] {
+  return getMeals().filter(m => m.client_id === clientId && m.date === date)
+}
+
+export function getAllMeals(): MealLog[] {
+  return getMeals().sort((a, b) => b.logged_at.localeCompare(a.logged_at))
+}
+
+export function addMeal(clientId: string, photo: string, mealType: MealLog['meal_type'], description?: string): MealLog {
+  const meals = getMeals()
+  const entry: MealLog = {
+    id: id(), client_id: clientId, photo, meal_type: mealType,
+    description, date: new Date().toISOString().split('T')[0],
+    logged_at: new Date().toISOString(),
+  }
+  meals.push(entry)
+  save(MEALS_KEY, meals)
+  return entry
+}
+
+export function rateMeal(mealId: string, rating: number, note?: string) {
+  const meals = getMeals()
+  const i = meals.findIndex(m => m.id === mealId)
+  if (i !== -1) {
+    meals[i].rating = rating
+    if (note !== undefined) meals[i].coach_note = note
+  }
+  save(MEALS_KEY, meals)
 }
 
 // ── Seed demo data ─────────────────────────────────────────────────────────────

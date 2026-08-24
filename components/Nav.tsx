@@ -2,12 +2,13 @@
 import { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { setSession, getSession } from '@/lib/store'
-import { Home, Camera, Dumbbell, TrendingUp, Users, MessageSquare, Clock, Settings, LogOut, Globe, ListChecks, Bot, Menu, X, Heart } from 'lucide-react'
+import { Home, Camera, Dumbbell, TrendingUp, Users, MessageSquare, Clock, Settings, LogOut, Globe, ListChecks, Bot, Menu, X, Heart, UtensilsCrossed } from 'lucide-react'
 
 interface NavItem { label: string; href: string; icon: React.ReactNode }
 
 const clientNav: NavItem[] = [
   { label:'Dashboard', href:'/dashboard', icon:<Home size={18}/> },
+  { label:'Meal Log', href:'/meals', icon:<UtensilsCrossed size={18}/> },
   { label:'Check-In', href:'/checkin', icon:<Camera size={18}/> },
   { label:'AI Coach', href:'/ai-coach', icon:<Bot size={18}/> },
   { label:'Workout Plan', href:'/plan', icon:<ListChecks size={18}/> },
@@ -19,6 +20,7 @@ const clientNav: NavItem[] = [
 
 const coachNav: NavItem[] = [
   { label:'My Clients', href:'/coach', icon:<Users size={18}/> },
+  { label:'Meal Reviews', href:'/coach/meals', icon:<UtensilsCrossed size={18}/> },
   { label:'Community', href:'/community', icon:<Globe size={18}/> },
   { label:'Messages', href:'/coach/messages', icon:<MessageSquare size={18}/> },
   { label:'Clock', href:'/coach/clock', icon:<Clock size={18}/> },
@@ -130,10 +132,10 @@ export default function Nav({ role }: { role: 'client'|'coach'|'admin' }) {
             Home
           </button>
 
-          <button className={`bottom-nav-btn ${isActive('/checkin') ? 'active' : ''}`}
-            onClick={() => navigate('/checkin')}>
-            <Camera size={22} />
-            Check-In
+          <button className={`bottom-nav-btn ${isActive('/meals') ? 'active' : ''}`}
+            onClick={() => navigate('/meals')}>
+            <UtensilsCrossed size={22} />
+            Meals
           </button>
 
           {/* Center AI Coach button */}
@@ -141,14 +143,13 @@ export default function Nav({ role }: { role: 'client'|'coach'|'admin' }) {
             <Bot size={24} style={{ color:'#1A1A1A' }} />
           </button>
 
-          <button className={`bottom-nav-btn ${isActive('/progress') ? 'active' : ''}`}
-            onClick={() => navigate('/progress')}>
-            <TrendingUp size={22} />
-            Progress
+          <button className={`bottom-nav-btn ${isActive('/checkin') ? 'active' : ''}`}
+            onClick={() => navigate('/checkin')}>
+            <Camera size={22} />
+            Check-In
           </button>
 
-          <button className={`bottom-nav-btn`}
-            onClick={() => setOpen(true)}>
+          <button className="bottom-nav-btn" onClick={() => setOpen(true)}>
             <Menu size={22} />
             More
           </button>
