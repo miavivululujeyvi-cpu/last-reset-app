@@ -55,8 +55,8 @@ export default function CoachMessages() {
                 <div key={m.id} style={{ display:'flex', justifyContent: fromMe ? 'flex-end' : 'flex-start' }}>
                   <div style={{
                     maxWidth:'72%', padding:'0.65rem 1rem', borderRadius: fromMe ? '12px 12px 2px 12px' : '12px 12px 12px 2px',
-                    background: fromMe ? '#FFE000' : '#222',
-                    color: fromMe ? '#0D0D0D' : '#e5e5e5',
+                    background: fromMe ? '#FFE000' : '#F3F4F9',
+                    color: '#1A1A1A',
                     fontSize:'0.9rem',
                   }}>
                     {m.content}

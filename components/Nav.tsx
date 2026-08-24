@@ -63,25 +63,25 @@ export default function Nav({ role }: { role: 'client'|'coach'|'admin' }) {
       {/* Sidebar */}
       <nav className={`nav-sidebar ${open ? 'nav-open' : ''}`}>
         {/* Brand */}
-        <div style={{ padding:'1.5rem 1.25rem 1rem', borderBottom:'1px solid #2a2a2a', display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
+        <div style={{ padding:'1.5rem 1.25rem 1rem', borderBottom:'1px solid #E2E4EC', display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
           <div>
-            <div style={{ fontSize:'0.7rem', color:'#666', letterSpacing:'0.12em', textTransform:'uppercase' }}>The Last Reset</div>
+            <div style={{ fontSize:'0.7rem', color:'#888', letterSpacing:'0.12em', textTransform:'uppercase' }}>The Last Reset</div>
             <div style={{ fontSize:'1.3rem', fontWeight:'800', color:'#FFE000', marginTop:'0.1rem' }}>Program</div>
           </div>
           {/* Close button — only shows on mobile */}
           <button onClick={() => setOpen(false)}
-            style={{ background:'transparent', border:'none', color:'#666', cursor:'pointer', padding:'0.2rem', display:'flex' }}
+            style={{ background:'transparent', border:'none', color:'#AAA', cursor:'pointer', padding:'0.2rem', display:'flex' }}
             className="nav-close-btn">
             <X size={18} />
           </button>
         </div>
 
         {/* Role badge */}
-        <div style={{ padding:'0.75rem 1.25rem', borderBottom:'1px solid #1a1a1a' }}>
+        <div style={{ padding:'0.75rem 1.25rem', borderBottom:'1px solid #EEEEEE' }}>
           <span className={`badge badge-${role === 'admin' ? 'yellow' : role === 'coach' ? 'green' : 'gray'}`}>
             {role.toUpperCase()}
           </span>
-          <div style={{ fontSize:'0.82rem', color:'#aaa', marginTop:'0.3rem', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+          <div style={{ fontSize:'0.82rem', color:'#666', marginTop:'0.3rem', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
             {user?.name}
           </div>
         </div>
@@ -97,7 +97,7 @@ export default function Nav({ role }: { role: 'client'|'coach'|'admin' }) {
                   display:'flex', alignItems:'center', gap:'0.6rem',
                   width:'100%', padding:'0.65rem 0.75rem', marginBottom:'0.2rem',
                   background: active ? 'rgba(255,224,0,0.1)' : 'transparent',
-                  color: active ? '#FFE000' : '#999',
+                  color: active ? '#1A1A1A' : '#666',
                   border: 'none', borderRadius:'7px', cursor:'pointer',
                   fontSize:'0.88rem', fontWeight: active ? '600' : '400',
                   textAlign:'left', transition:'all 0.15s',
@@ -110,9 +110,9 @@ export default function Nav({ role }: { role: 'client'|'coach'|'admin' }) {
         </div>
 
         {/* Logout */}
-        <div style={{ padding:'0.75rem', borderTop:'1px solid #2a2a2a' }}>
+        <div style={{ padding:'0.75rem', borderTop:'1px solid #E2E4EC' }}>
           <button onClick={logout}
-            style={{ display:'flex', alignItems:'center', gap:'0.6rem', width:'100%', padding:'0.65rem 0.75rem', background:'transparent', color:'#666', border:'none', borderRadius:'7px', cursor:'pointer', fontSize:'0.88rem' }}>
+            style={{ display:'flex', alignItems:'center', gap:'0.6rem', width:'100%', padding:'0.65rem 0.75rem', background:'transparent', color:'#888', border:'none', borderRadius:'7px', cursor:'pointer', fontSize:'0.88rem' }}>
             <LogOut size={16}/> Sign Out
           </button>
         </div>

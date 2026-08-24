@@ -101,7 +101,7 @@ export default function AdminOverview() {
           {recentCheckins.length === 0
             ? <p style={{ color:'#666', fontSize:'0.9rem' }}>No check-ins yet.</p>
             : recentCheckins.map(c => (
-              <div key={c.id} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'0.6rem 0', borderBottom:'1px solid #1a1a1a' }}>
+              <div key={c.id} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'0.6rem 0', borderBottom:'1px solid #EEEEEE' }}>
                 <div>
                   <div style={{ fontWeight:'600', fontSize:'0.9rem' }}>{c.clientName}</div>
                   <div style={{ fontSize:'0.78rem', color:'#555' }}>{c.date}</div>

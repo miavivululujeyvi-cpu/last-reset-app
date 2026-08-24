@@ -128,10 +128,10 @@ export default function WorkoutPage() {
                     onFocus={() => setShowLibrary(i)}
                   />
                   {showLibrary === i && (
-                    <div style={{ position:'absolute', top:'100%', left:0, right:0, background:'#1a1a1a', border:'1px solid #333', borderRadius:'6px', zIndex:20, maxHeight:'200px', overflowY:'auto' }}>
+                    <div style={{ position:'absolute', top:'100%', left:0, right:0, background:'#FFFFFF', border:'1px solid #E2E4EC', borderRadius:'6px', boxShadow:'0 4px 16px rgba(0,0,0,0.10)', zIndex:20, maxHeight:'200px', overflowY:'auto' }}>
                       {EXERCISE_LIBRARY.filter(e => !ex.name || e.name.toLowerCase().includes(ex.name.toLowerCase())).map(e => (
                         <button key={e.name} onClick={() => updateExercise(i, e.name)}
-                          style={{ display:'flex', justifyContent:'space-between', width:'100%', padding:'0.6rem 0.9rem', background:'transparent', border:'none', color:'#e5e5e5', cursor:'pointer', textAlign:'left', fontSize:'0.88rem' }}>
+                          style={{ display:'flex', justifyContent:'space-between', width:'100%', padding:'0.6rem 0.9rem', background:'transparent', border:'none', color:'#1A1A1A', cursor:'pointer', textAlign:'left', fontSize:'0.88rem' }}>
                           <span>{e.name}</span>
                           <span style={{ color:'#555', fontSize:'0.78rem' }}>{e.group}</span>
                         </button>
@@ -164,7 +164,7 @@ export default function WorkoutPage() {
                       onChange={e => updateSet(i, si, 'weight', e.target.value)}
                       style={{ textAlign:'center', padding:'0.45rem', flex:1 }} />
                     <select value={s.unit} onChange={e => updateSet(i, si, 'unit', e.target.value as 'kg'|'lbs')}
-                      style={{ background:'#1a1a1a', border:'1px solid #333', color:'#888', borderRadius:'6px', padding:'0.45rem', fontSize:'0.78rem', cursor:'pointer' }}>
+                      style={{ background:'#FFFFFF', border:'1px solid #E2E4EC', color:'#555', borderRadius:'6px', padding:'0.45rem', fontSize:'0.78rem', cursor:'pointer' }}>
                       <option>kg</option>
                       <option>lbs</option>
                     </select>

@@ -183,7 +183,7 @@ export default function CyclePage() {
               <div style={{ fontWeight: '700', fontSize: '1.1rem', marginBottom: '0.5rem' }}>
                 {currentPhase.icon} {currentPhase.name} Phase
               </div>
-              <p style={{ color: '#aaa', fontSize: '0.88rem', lineHeight: '1.55' }}>{currentPhase.summary}</p>
+              <p style={{ color: '#666', fontSize: '0.88rem', lineHeight: '1.55' }}>{currentPhase.summary}</p>
               <button onClick={() => setEditing(true)}
                 style={{ marginTop: '1rem', background: 'transparent', border: 'none', color: '#555', fontSize: '0.78rem', cursor: 'pointer', padding: 0 }}>
                 Edit cycle settings
@@ -199,7 +199,7 @@ export default function CyclePage() {
                   const effectiveEnd = i === 3 ? cycleLength : end
                   const width = ((effectiveEnd - start + 1) / cycleLength) * 100
                   return (
-                    <div key={phase.name} style={{ width: `${width}%`, background: `${phase.color}33`, borderRight: '2px solid #0D0D0D', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', color: phase.color, fontWeight: '600', flexShrink: 0 }}>
+                    <div key={phase.name} style={{ width: `${width}%`, background: `${phase.color}22`, borderRight: '2px solid #FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', color: phase.color, fontWeight: '600', flexShrink: 0 }}>
                       {phase.name.slice(0, 3)}
                     </div>
                   )
@@ -208,8 +208,8 @@ export default function CyclePage() {
                 <div style={{
                   position: 'absolute', top: 0, bottom: 0,
                   left: `${((cycleDay - 0.5) / cycleLength) * 100}%`,
-                  width: '3px', background: '#fff', borderRadius: '2px',
-                  boxShadow: '0 0 6px rgba(255,255,255,0.6)'
+                  width: '3px', background: '#1A1A1A', borderRadius: '2px',
+                  boxShadow: '0 0 6px rgba(0,0,0,0.3)'
                 }} />
               </div>
               {/* Phase labels */}
@@ -232,7 +232,7 @@ export default function CyclePage() {
                 {currentPhase.tips.map((tip, i) => (
                   <div key={i} style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
                     <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: currentPhase.color, marginTop: '0.45rem', flexShrink: 0 }} />
-                    <span style={{ fontSize: '0.88rem', color: '#ccc', lineHeight: '1.5' }}>{tip}</span>
+                    <span style={{ fontSize: '0.88rem', color: '#444', lineHeight: '1.5' }}>{tip}</span>
                   </div>
                 ))}
               </div>
@@ -246,7 +246,7 @@ export default function CyclePage() {
                 const effectiveEnd = i === 3 ? cycleLength : end
                 const isActive = phase.name === currentPhase.name
                 return (
-                  <div key={phase.name} className="card" style={{ border: isActive ? `2px solid ${phase.color}` : '1px solid #333', opacity: isActive ? 1 : 0.7 }}>
+                  <div key={phase.name} className="card" style={{ border: isActive ? `2px solid ${phase.color}` : '1px solid #E0E0EC', opacity: isActive ? 1 : 0.7 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
                       <div style={{ fontWeight: '700', fontSize: '0.9rem' }}>
                         {phase.icon} {phase.name} Phase

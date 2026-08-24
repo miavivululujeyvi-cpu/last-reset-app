@@ -76,7 +76,7 @@ export default function CommunityPage() {
         <div className="card" style={{ marginBottom:'1.5rem' }}>
           <form onSubmit={handlePost}>
             <div style={{ display:'flex', gap:'0.75rem', alignItems:'flex-start' }}>
-              <div style={{ width:'38px', height:'38px', borderRadius:'50%', background:'#333', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:'700', color: roleColor(user.role), fontSize:'1rem', flexShrink:0 }}>
+              <div style={{ width:'38px', height:'38px', borderRadius:'50%', background:'#ECEEF5', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:'700', color: roleColor(user.role), fontSize:'1rem', flexShrink:0 }}>
                 {user.name[0]}
               </div>
               <textarea
@@ -117,7 +117,7 @@ export default function CommunityPage() {
 
                 {/* Author row */}
                 <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', marginBottom:'0.9rem' }}>
-                  <div style={{ width:'38px', height:'38px', borderRadius:'50%', background:'#333', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:'700', color: roleColor(author?.role || 'client'), fontSize:'1rem', flexShrink:0 }}>
+                  <div style={{ width:'38px', height:'38px', borderRadius:'50%', background:'#ECEEF5', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:'700', color: roleColor(author?.role || 'client'), fontSize:'1rem', flexShrink:0 }}>
                     {author?.name?.[0] || '?'}
                   </div>
                   <div style={{ flex:1 }}>
@@ -137,7 +137,7 @@ export default function CommunityPage() {
                 </p>
 
                 {/* Actions */}
-                <div style={{ display:'flex', alignItems:'center', gap:'1rem', paddingTop:'0.75rem', borderTop:'1px solid #2a2a2a' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:'1rem', paddingTop:'0.75rem', borderTop:'1px solid #E2E4EC' }}>
                   <button onClick={() => handleLike(post.id)}
                     style={{ display:'flex', alignItems:'center', gap:'0.35rem', background:'transparent', border:'none', cursor:'pointer',
                       color: liked ? '#f87171' : '#555', fontSize:'0.85rem', fontWeight: liked ? '700' : '400', transition:'color 0.15s' }}>

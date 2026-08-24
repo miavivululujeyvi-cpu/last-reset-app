@@ -107,7 +107,7 @@ export default function CheckInPage() {
             </div>
 
             <div style={{ background:'rgba(255,224,0,0.05)', border:'1px solid rgba(255,224,0,0.15)', borderRadius:'8px', padding:'1rem' }}>
-              <p style={{ fontSize:'0.82rem', color:'#999', lineHeight:'1.5' }}>
+              <p style={{ fontSize:'0.82rem', color:'#555', lineHeight:'1.5' }}>
                 After submitting, your coach will review your check-in and send feedback.
                 Stay consistent. Every day counts.
               </p>

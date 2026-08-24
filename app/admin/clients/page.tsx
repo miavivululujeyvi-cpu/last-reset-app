@@ -104,7 +104,7 @@ export default function AdminClients() {
         <div className="card">
           <table style={{ width:'100%', borderCollapse:'collapse', fontSize:'0.88rem' }}>
             <thead>
-              <tr style={{ borderBottom:'1px solid #2a2a2a' }}>
+              <tr style={{ borderBottom:'1px solid #E2E4EC' }}>
                 {['Name','Coach','Last Check-In','Weight','Check-Ins','Pending'].map(h => (
                   <th key={h} style={{ textAlign:'left', padding:'0.6rem 0.5rem', color:'#555', fontWeight:'600', fontSize:'0.78rem', textTransform:'uppercase', letterSpacing:'0.05em' }}>{h}</th>
                 ))}
@@ -112,7 +112,7 @@ export default function AdminClients() {
             </thead>
             <tbody>
               {rows.map(({ client, lastCheckin, total, pending, coachName }) => (
-                <tr key={client.id} style={{ borderBottom:'1px solid #1a1a1a' }}>
+                <tr key={client.id} style={{ borderBottom:'1px solid #EEEEEE' }}>
                   <td style={{ padding:'0.75rem 0.5rem' }}>
                     <div style={{ fontWeight:'600' }}>{client.name}</div>
                     <div style={{ fontSize:'0.78rem', color:'#555' }}>{client.email}</div>

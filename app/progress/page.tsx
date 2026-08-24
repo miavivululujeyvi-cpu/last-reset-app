@@ -58,7 +58,7 @@ export default function ProgressPage() {
           {(['weight','workouts'] as const).map(t => (
             <button key={t} onClick={() => setTab(t)}
               style={{ padding:'0.55rem 1.2rem', borderRadius:'6px', border:'none', cursor:'pointer', fontSize:'0.88rem', fontWeight:'600',
-                background: tab === t ? '#FFE000' : '#222', color: tab === t ? '#0D0D0D' : '#888' }}>
+                background: tab === t ? '#FFE000' : '#ECEEF5', color: tab === t ? '#1A1A1A' : '#666' }}>
               {t === 'weight' ? 'Weight History' : 'Workouts'}
             </button>
           ))}
@@ -90,7 +90,7 @@ export default function ProgressPage() {
                   {/* Table */}
                   <table style={{ width:'100%', borderCollapse:'collapse', fontSize:'0.88rem' }}>
                     <thead>
-                      <tr style={{ borderBottom:'1px solid #2a2a2a' }}>
+                      <tr style={{ borderBottom:'1px solid #E2E4EC' }}>
                         <th style={{ textAlign:'left', padding:'0.5rem 0', color:'#555', fontWeight:'600' }}>Date</th>
                         <th style={{ textAlign:'right', padding:'0.5rem 0', color:'#555', fontWeight:'600' }}>Weight</th>
                         <th style={{ textAlign:'right', padding:'0.5rem 0', color:'#555', fontWeight:'600' }}>Change</th>
@@ -102,8 +102,8 @@ export default function ProgressPage() {
                         const prev = checkins[idx + 1]
                         const diff = prev ? c.weight - prev.weight : 0
                         return (
-                          <tr key={c.id} style={{ borderBottom:'1px solid #1a1a1a' }}>
-                            <td style={{ padding:'0.6rem 0', color:'#999' }}>{c.date}</td>
+                          <tr key={c.id} style={{ borderBottom:'1px solid #EEEEEE' }}>
+                            <td style={{ padding:'0.6rem 0', color:'#555' }}>{c.date}</td>
                             <td style={{ padding:'0.6rem 0', textAlign:'right', fontWeight:'700', color:'#FFE000' }}>{c.weight} kg</td>
                             <td style={{ padding:'0.6rem 0', textAlign:'right', fontSize:'0.82rem',
                               color: diff < 0 ? '#4ade80' : diff > 0 ? '#f87171' : '#888' }}>

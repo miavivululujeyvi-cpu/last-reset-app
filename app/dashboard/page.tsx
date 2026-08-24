@@ -90,7 +90,7 @@ export default function ClientDashboard() {
           {checkins.length === 0
             ? <p style={{ color:'#666', fontSize:'0.9rem' }}>No check-ins yet. Start today!</p>
             : checkins.slice(0,5).map(c => (
-              <div key={c.id} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'0.6rem 0', borderBottom:'1px solid #2a2a2a' }}>
+              <div key={c.id} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'0.6rem 0', borderBottom:'1px solid #E2E4EC' }}>
                 <div>
                   <div style={{ fontSize:'0.9rem', fontWeight:'600' }}>{c.date}</div>
                   {c.coach_feedback && <div style={{ fontSize:'0.78rem', color:'#888', marginTop:'0.15rem' }}>Coach: {c.coach_feedback}</div>}
@@ -112,10 +112,10 @@ export default function ClientDashboard() {
 
 function TaskRow({ done, label, sub, action, icon }: { done:boolean; label:string; sub:string; action:()=>void; icon:React.ReactNode }) {
   return (
-    <div style={{ display:'flex', alignItems:'center', gap:'1rem', padding:'0.75rem', background: done ? 'rgba(34,197,94,0.06)' : 'rgba(255,224,0,0.04)', borderRadius:'8px', border:`1px solid ${done ? '#1a3a1a' : '#2a2a1a'}` }}>
-      <div style={{ color: done ? '#4ade80' : '#FFE000' }}>{done ? <CheckCircle size={20}/> : icon}</div>
+    <div style={{ display:'flex', alignItems:'center', gap:'1rem', padding:'0.75rem', background: done ? 'rgba(34,197,94,0.06)' : 'rgba(255,224,0,0.07)', borderRadius:'10px', border:`1px solid ${done ? 'rgba(34,197,94,0.25)' : 'rgba(255,224,0,0.35)'}` }}>
+      <div style={{ color: done ? '#16a34a' : '#997700' }}>{done ? <CheckCircle size={20}/> : icon}</div>
       <div style={{ flex:1 }}>
-        <div style={{ fontSize:'0.92rem', fontWeight:'600', color: done ? '#4ade80' : '#e5e5e5' }}>{label}</div>
+        <div style={{ fontSize:'0.92rem', fontWeight:'600', color: done ? '#16a34a' : '#1A1A1A' }}>{label}</div>
         <div style={{ fontSize:'0.78rem', color:'#666' }}>{sub}</div>
       </div>
       {!done && <button className="btn-yellow" style={{ fontSize:'0.8rem', padding:'0.4rem 0.9rem' }} onClick={action}>Do it</button>}

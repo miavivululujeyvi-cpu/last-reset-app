@@ -102,7 +102,7 @@ function ClientCheckinRow({ checkin }: { checkin: CheckIn }) {
   }
 
   return (
-    <div style={{ borderBottom:'1px solid #1a1a1a', padding:'0.75rem 0' }}>
+    <div style={{ borderBottom:'1px solid #EEEEEE', padding:'0.75rem 0' }}>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'0.5rem' }}>
         <div>
           <div style={{ fontWeight:'600', fontSize:'0.9rem' }}>{checkin.date}</div>

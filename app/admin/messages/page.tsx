@@ -73,7 +73,7 @@ export default function AdminMessages() {
           <div className="card" style={{ display:'flex', flexDirection:'column', padding:'1rem' }}>
             {selected ? (
               <>
-                <div style={{ borderBottom:'1px solid #2a2a2a', paddingBottom:'0.75rem', marginBottom:'0.75rem', fontWeight:'700', fontSize:'0.95rem' }}>
+                <div style={{ borderBottom:'1px solid #E2E4EC', paddingBottom:'0.75rem', marginBottom:'0.75rem', fontWeight:'700', fontSize:'0.95rem' }}>
                   {selected.name}
                 </div>
                 <div style={{ flex:1, overflowY:'auto', display:'flex', flexDirection:'column', gap:'0.6rem', marginBottom:'0.75rem' }}>
@@ -88,8 +88,8 @@ export default function AdminMessages() {
                       <div key={m.id} style={{ display:'flex', justifyContent: fromMe ? 'flex-end' : 'flex-start' }}>
                         <div style={{
                           maxWidth:'70%', padding:'0.6rem 0.9rem', borderRadius: fromMe ? '10px 10px 2px 10px' : '10px 10px 10px 2px',
-                          background: fromMe ? '#FFE000' : '#1a1a1a',
-                          color: fromMe ? '#0D0D0D' : '#e5e5e5', fontSize:'0.88rem',
+                          background: fromMe ? '#FFE000' : '#F3F4F9',
+                          color: '#1A1A1A', fontSize:'0.88rem',
                         }}>
                           {m.content}
                           <div style={{ fontSize:'0.68rem', opacity:0.5, marginTop:'0.2rem', textAlign:'right' }}>

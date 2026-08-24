@@ -122,7 +122,7 @@ export default function PlanPage() {
             <span style={{ fontSize:'0.85rem', color:'#888' }}>Today's progress</span>
             <span style={{ fontWeight:'700', color:'#FFE000' }}>{totalCompleted}/{totalExercises}</span>
           </div>
-          <div style={{ background:'#333', borderRadius:'20px', height:'8px', overflow:'hidden' }}>
+          <div style={{ background:'#E2E4EC', borderRadius:'20px', height:'8px', overflow:'hidden' }}>
             <div style={{ background:'#FFE000', height:'100%', width:`${(totalCompleted / totalExercises) * 100}%`, borderRadius:'20px', transition:'width 0.3s' }}/>
           </div>
           {totalCompleted === totalExercises && (
@@ -144,7 +144,7 @@ export default function PlanPage() {
                   style={{ width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'1rem 1.25rem', background:'transparent', border:'none', cursor:'pointer', textAlign:'left' }}>
                   <div style={{ display:'flex', alignItems:'center', gap:'0.75rem' }}>
                     <div style={{ width:'10px', height:'10px', borderRadius:'50%', background:group.color, flexShrink:0 }}/>
-                    <span style={{ fontWeight:'700', fontSize:'1rem', color:'#e5e5e5' }}>{group.group}</span>
+                    <span style={{ fontWeight:'700', fontSize:'1rem', color:'#1A1A1A' }}>{group.group}</span>
                     <span style={{ fontSize:'0.78rem', color:'#555' }}>{group.exercises.length} exercises</span>
                   </div>
                   <div style={{ display:'flex', alignItems:'center', gap:'0.75rem' }}>
@@ -157,14 +157,14 @@ export default function PlanPage() {
 
                 {/* Exercises */}
                 {isOpen && (
-                  <div style={{ borderTop:'1px solid #2a2a2a' }}>
+                  <div style={{ borderTop:'1px solid #E2E4EC' }}>
                     {group.exercises.map((ex, i) => {
                       const done = !!completed[ex.name]
                       const hasVideo = !!videos[ex.name]
                       const isVideoOpen = activeVideo === ex.name
                       const ytId = hasVideo ? getYouTubeId(videos[ex.name]) : null
                       return (
-                        <div key={ex.name} style={{ borderBottom: i < group.exercises.length - 1 ? '1px solid #1a1a1a' : 'none' }}>
+                        <div key={ex.name} style={{ borderBottom: i < group.exercises.length - 1 ? '1px solid #EEEEEE' : 'none' }}>
                           <div style={{ display:'flex', alignItems:'center', gap:'1rem', padding:'0.9rem 1.25rem' }}>
                             {/* Checkbox */}
                             <button onClick={(e) => { e.stopPropagation(); toggleComplete(ex.name) }}

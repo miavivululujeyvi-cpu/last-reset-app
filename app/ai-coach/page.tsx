@@ -155,7 +155,7 @@ export default function AICoachPage() {
       <Nav role="client" />
 
       {/* Header */}
-      <div style={{ padding: '1.25rem 2rem', borderBottom: '1px solid #222', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+      <div style={{ padding: '1.25rem 2rem', borderBottom: '1px solid #E2E4EC', background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,224,0,0.1)', border: '2px solid #FFE000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Bot size={20} style={{ color: '#FFE000' }} />
@@ -200,12 +200,12 @@ export default function AICoachPage() {
                 <div style={{
                   padding: '0.75rem 1rem',
                   borderRadius: m.role === 'user' ? '16px 16px 2px 16px' : '16px 16px 16px 2px',
-                  background: m.role === 'user' ? '#FFE000' : '#1e1e1e',
-                  color: m.role === 'user' ? '#0D0D0D' : '#e5e5e5',
+                  background: m.role === 'user' ? '#FFE000' : '#F3F4F9',
+                  color: m.role === 'user' ? '#1A1A1A' : '#1A1A1A',
                   fontSize: '0.93rem',
                   lineHeight: '1.55',
                   whiteSpace: 'pre-wrap',
-                  border: m.role === 'assistant' ? '1px solid #2a2a2a' : 'none',
+                  border: m.role === 'assistant' ? '1px solid #E2E4EC' : 'none',
                 }}>
                   {m.content}
                 </div>
@@ -219,7 +219,7 @@ export default function AICoachPage() {
             <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'rgba(255,224,0,0.1)', border: '1px solid #FFE000', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <Bot size={14} style={{ color: '#FFE000' }} />
             </div>
-            <div style={{ padding: '0.75rem 1rem', borderRadius: '16px 16px 16px 2px', background: '#1e1e1e', border: '1px solid #2a2a2a' }}>
+            <div style={{ padding: '0.75rem 1rem', borderRadius: '16px 16px 16px 2px', background: '#F3F4F9', border: '1px solid #E2E4EC' }}>
               <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                 {[0, 1, 2].map(i => (
                   <div key={i} style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#FFE000', opacity: 0.6, animation: `pulse 1.2s ease-in-out ${i * 0.2}s infinite` }} />
@@ -236,7 +236,7 @@ export default function AICoachPage() {
         <div style={{ padding: '0 1.25rem 0.75rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap', flexShrink: 0 }}>
           {QUICK_PROMPTS.map(p => (
             <button key={p} onClick={() => sendMessage(p)}
-              style={{ background: 'rgba(255,224,0,0.06)', border: '1px solid #2a2a1a', borderRadius: '20px', padding: '0.35rem 0.85rem', fontSize: '0.8rem', color: '#ccc', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem', whiteSpace: 'nowrap' }}>
+              style={{ background: '#FFFFFF', border: '1px solid #E2E4EC', borderRadius: '20px', padding: '0.35rem 0.85rem', fontSize: '0.8rem', color: '#555', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem', whiteSpace: 'nowrap' }}>
               <Zap size={11} style={{ color: '#FFE000' }} /> {p}
             </button>
           ))}
@@ -244,7 +244,7 @@ export default function AICoachPage() {
       )}
 
       {/* Input */}
-      <div style={{ padding: '1rem 1.25rem 1.5rem', borderTop: '1px solid #1a1a1a', flexShrink: 0 }}>
+      <div style={{ padding: '1rem 1.25rem 1.5rem', borderTop: '1px solid #EEEEEE', flexShrink: 0 }}>
         {/* Food photo hint */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.6rem' }}>
           <Camera size={13} style={{ color: '#FFE000' }} />

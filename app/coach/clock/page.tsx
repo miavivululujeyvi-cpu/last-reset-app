@@ -83,7 +83,7 @@ export default function CoachClock() {
               {fmt(elapsed)}
             </div>
             <div style={{ fontSize:'0.9rem', color:'#888', marginBottom:'1.25rem' }}>
-              Client: <strong style={{ color:'#e5e5e5' }}>{clientMap[active.client_id] || 'Unknown'}</strong>
+              Client: <strong style={{ color:'#1A1A1A' }}>{clientMap[active.client_id] || 'Unknown'}</strong>
             </div>
             <button className="btn-ghost" onClick={handleClockOut}
               style={{ display:'flex', alignItems:'center', gap:'0.5rem', color:'#f87171', borderColor:'#f87171' }}>
@@ -99,7 +99,7 @@ export default function CoachClock() {
                 <div style={{ display:'flex', flexDirection:'column', gap:'0.5rem' }}>
                   {clients.map(c => (
                     <button key={c.id} onClick={() => handleClockIn(c.id)}
-                      style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0.75rem 1rem', background:'#1a1a1a', border:'1px solid #2a2a2a', borderRadius:'8px', cursor:'pointer', color:'#e5e5e5' }}>
+                      style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0.75rem 1rem', background:'#1a1a1a', border:'1px solid #E2E4EC', borderRadius:'8px', cursor:'pointer', color:'#1A1A1A' }}>
                       <span style={{ fontWeight:'600' }}>{c.name}</span>
                       <span style={{ display:'flex', alignItems:'center', gap:'0.4rem', color:'#FFE000', fontSize:'0.85rem', fontWeight:'700' }}>
                         <Play size={14}/> Start
@@ -130,7 +130,7 @@ export default function CoachClock() {
           {history.length === 0
             ? <p style={{ color:'#666', fontSize:'0.9rem' }}>No completed sessions yet.</p>
             : history.slice(0, 10).map(e => (
-              <div key={e.id} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'0.6rem 0', borderBottom:'1px solid #1a1a1a', fontSize:'0.88rem' }}>
+              <div key={e.id} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'0.6rem 0', borderBottom:'1px solid #EEEEEE', fontSize:'0.88rem' }}>
                 <div>
                   <div style={{ fontWeight:'600' }}>{clientMap[e.client_id] || 'Client'}</div>
                   <div style={{ color:'#555', fontSize:'0.78rem' }}>{new Date(e.clock_in).toLocaleDateString()}</div>

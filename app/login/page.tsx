@@ -22,7 +22,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ minHeight:'100vh', background:'#0D0D0D', display:'flex', alignItems:'center', justifyContent:'center', padding:'1rem' }}>
+    <div style={{ minHeight:'100vh', background:'#F4F5FA', display:'flex', alignItems:'center', justifyContent:'center', padding:'1rem', flexDirection:'column' }}>
       <div style={{ width:'100%', maxWidth:'400px' }}>
         {/* Logo */}
         <div style={{ textAlign:'center', marginBottom:'2.5rem' }}>
