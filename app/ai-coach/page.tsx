@@ -164,7 +164,7 @@ export default function AICoachPage() {
             <div style={{ fontWeight: '800', fontSize: '1rem' }}>AI Coach</div>
             <div style={{ fontSize: '0.75rem', color: '#4ade80', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
               <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80', display: 'inline-block' }} />
-              Online — powered by The Last Reset Program
+              Online: powered by The Last Reset Program
             </div>
           </div>
         </div>

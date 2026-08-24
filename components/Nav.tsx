@@ -50,9 +50,13 @@ export default function Nav({ role }: { role: 'client'|'coach'|'admin' }) {
     setOpen(false)
   }
 
+  function isActive(href: string) {
+    return pathname === href || (href !== '/' && pathname.startsWith(href) && href.length > 1)
+  }
+
   return (
     <>
-      {/* Hamburger button — only shows on mobile */}
+      {/* Hamburger — desktop only (hidden on mobile via CSS) */}
       <button className="nav-hamburger" onClick={() => setOpen(true)} aria-label="Open menu">
         <Menu size={20} />
       </button>
@@ -65,23 +69,22 @@ export default function Nav({ role }: { role: 'client'|'coach'|'admin' }) {
         {/* Brand */}
         <div style={{ padding:'1.5rem 1.25rem 1rem', borderBottom:'1px solid #E2E4EC', display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
           <div>
-            <div style={{ fontSize:'0.7rem', color:'#888', letterSpacing:'0.12em', textTransform:'uppercase' }}>The Last Reset</div>
-            <div style={{ fontSize:'1.3rem', fontWeight:'800', color:'#FFE000', marginTop:'0.1rem' }}>Program</div>
+            <div style={{ fontSize:'0.68rem', color:'#AAA', letterSpacing:'0.14em', textTransform:'uppercase' }}>The Last Reset</div>
+            <div style={{ fontSize:'1.3rem', fontWeight:'800', color:'#FFE000', marginTop:'0.1rem', letterSpacing:'-0.02em' }}>Program</div>
           </div>
-          {/* Close button — only shows on mobile */}
           <button onClick={() => setOpen(false)}
-            style={{ background:'transparent', border:'none', color:'#AAA', cursor:'pointer', padding:'0.2rem', display:'flex' }}
+            style={{ background:'transparent', border:'none', color:'#CCC', cursor:'pointer', padding:'0.2rem', display:'flex' }}
             className="nav-close-btn">
             <X size={18} />
           </button>
         </div>
 
-        {/* Role badge */}
-        <div style={{ padding:'0.75rem 1.25rem', borderBottom:'1px solid #EEEEEE' }}>
+        {/* Role badge + name */}
+        <div style={{ padding:'0.85rem 1.25rem', borderBottom:'1px solid #EEEEEE' }}>
           <span className={`badge badge-${role === 'admin' ? 'yellow' : role === 'coach' ? 'green' : 'gray'}`}>
             {role.toUpperCase()}
           </span>
-          <div style={{ fontSize:'0.82rem', color:'#666', marginTop:'0.3rem', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+          <div style={{ fontSize:'0.85rem', color:'#444', marginTop:'0.35rem', fontWeight:'600', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
             {user?.name}
           </div>
         </div>
@@ -89,20 +92,20 @@ export default function Nav({ role }: { role: 'client'|'coach'|'admin' }) {
         {/* Nav items */}
         <div style={{ flex:1, padding:'0.75rem 0.75rem', overflowY:'auto' }}>
           {items.map(item => {
-            const active = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href) && item.href.length > 1)
+            const active = isActive(item.href)
             return (
               <button key={item.href}
                 onClick={() => navigate(item.href)}
                 style={{
-                  display:'flex', alignItems:'center', gap:'0.6rem',
-                  width:'100%', padding:'0.65rem 0.75rem', marginBottom:'0.2rem',
-                  background: active ? 'rgba(255,224,0,0.1)' : 'transparent',
-                  color: active ? '#1A1A1A' : '#666',
-                  border: 'none', borderRadius:'7px', cursor:'pointer',
-                  fontSize:'0.88rem', fontWeight: active ? '600' : '400',
+                  display:'flex', alignItems:'center', gap:'0.65rem',
+                  width:'100%', padding:'0.7rem 0.85rem', marginBottom:'0.15rem',
+                  background: active ? 'rgba(255,224,0,0.12)' : 'transparent',
+                  color: active ? '#1A1A1A' : '#777',
+                  border: 'none', borderRadius:'10px', cursor:'pointer',
+                  fontSize:'0.88rem', fontWeight: active ? '700' : '400',
                   textAlign:'left', transition:'all 0.15s',
                 }}>
-                {item.icon}
+                <span style={{ color: active ? '#FFE000' : 'inherit', display:'flex' }}>{item.icon}</span>
                 {item.label}
               </button>
             )
@@ -112,11 +115,45 @@ export default function Nav({ role }: { role: 'client'|'coach'|'admin' }) {
         {/* Logout */}
         <div style={{ padding:'0.75rem', borderTop:'1px solid #E2E4EC' }}>
           <button onClick={logout}
-            style={{ display:'flex', alignItems:'center', gap:'0.6rem', width:'100%', padding:'0.65rem 0.75rem', background:'transparent', color:'#888', border:'none', borderRadius:'7px', cursor:'pointer', fontSize:'0.88rem' }}>
+            style={{ display:'flex', alignItems:'center', gap:'0.65rem', width:'100%', padding:'0.7rem 0.85rem', background:'transparent', color:'#999', border:'none', borderRadius:'10px', cursor:'pointer', fontSize:'0.88rem' }}>
             <LogOut size={16}/> Sign Out
           </button>
         </div>
       </nav>
+
+      {/* ── Bottom nav — client mobile only ── */}
+      {role === 'client' && (
+        <nav className="bottom-nav">
+          <button className={`bottom-nav-btn ${isActive('/dashboard') ? 'active' : ''}`}
+            onClick={() => navigate('/dashboard')}>
+            <Home size={22} />
+            Home
+          </button>
+
+          <button className={`bottom-nav-btn ${isActive('/checkin') ? 'active' : ''}`}
+            onClick={() => navigate('/checkin')}>
+            <Camera size={22} />
+            Check-In
+          </button>
+
+          {/* Center AI Coach button */}
+          <button className="bottom-nav-center" onClick={() => navigate('/ai-coach')} aria-label="AI Coach">
+            <Bot size={24} style={{ color:'#1A1A1A' }} />
+          </button>
+
+          <button className={`bottom-nav-btn ${isActive('/progress') ? 'active' : ''}`}
+            onClick={() => navigate('/progress')}>
+            <TrendingUp size={22} />
+            Progress
+          </button>
+
+          <button className={`bottom-nav-btn`}
+            onClick={() => setOpen(true)}>
+            <Menu size={22} />
+            More
+          </button>
+        </nav>
+      )}
 
       <style>{`
         @media (min-width: 769px) {

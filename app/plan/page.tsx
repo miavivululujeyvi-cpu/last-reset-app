@@ -114,7 +114,7 @@ export default function PlanPage() {
       <Nav role="client" />
       <div style={{ padding:'2rem', maxWidth:'740px' }}>
         <h1 style={{ fontSize:'1.5rem', fontWeight:'800', marginBottom:'0.25rem' }}>Workout Plan</h1>
-        <p style={{ color:'#888', marginBottom:'1.5rem' }}>Strength Training — 3 sets × 8 reps per exercise</p>
+        <p style={{ color:'#888', marginBottom:'1.5rem' }}>Strength Training: 3 sets × 8 reps per exercise</p>
 
         {/* Progress bar */}
         <div className="card" style={{ marginBottom:'1.5rem' }}>
@@ -174,7 +174,7 @@ export default function PlanPage() {
 
                             {/* Info */}
                             <div style={{ flex:1 }}>
-                              <div style={{ fontWeight:'600', fontSize:'0.95rem', color: done ? '#555' : '#e5e5e5', textDecoration: done ? 'line-through' : 'none', transition:'all 0.15s' }}>
+                              <div style={{ fontWeight:'600', fontSize:'0.95rem', color: done ? '#AAAAAA' : '#1A1A1A', textDecoration: done ? 'line-through' : 'none', transition:'all 0.15s' }}>
                                 {ex.name}
                               </div>
                               <div style={{ fontSize:'0.78rem', color:'#555' }}>{ex.sets} sets × {ex.reps} reps</div>

@@ -30,9 +30,9 @@ const PHASES = [
     summary: 'Estrogen is rising. Energy comes back. This is your strongest phase for discipline and sticking to the diet.',
     tips: [
       'Best time to start a new habit or reset',
-      'Push harder in workouts — your body recovers faster',
+      'Push harder in workouts: your body recovers faster',
       'Lean proteins and vegetables will feel easy now',
-      'Take advantage of this window — it does not last long',
+      'Take advantage of this window: it does not last long',
     ],
   },
   {
@@ -45,7 +45,7 @@ const PHASES = [
     summary: 'Peak estrogen. You feel your best. Mood is high, energy is high, discipline is easiest.',
     tips: [
       'Hardest workouts of the month go here',
-      'Social energy is up — great time for accountability calls',
+      'Social energy is up: great time for accountability calls',
       'Your body burns more calories naturally right now',
       'Protein intake is most effective during this phase',
     ],
@@ -59,11 +59,11 @@ const PHASES = [
     icon: '⚠️',
     summary: 'Progesterone rises. PMS begins. Cravings for sugar and carbs are the strongest of the month. This is where most women fall off their diet.',
     tips: [
-      'Plan your meals ahead — do NOT rely on willpower',
+      'Plan your meals ahead: do NOT rely on willpower',
       'Sugar cravings are hormonal, not weakness. Eat berries instead',
-      'Bloating is normal — do not panic about the scale',
+      'Bloating is normal: do not panic about the scale',
       'Sleep more: 8 hours minimum to control cortisol',
-      'Tell your coach if you are struggling — this phase is the hardest',
+      'Tell your coach if you are struggling: this phase is the hardest',
     ],
   },
 ]

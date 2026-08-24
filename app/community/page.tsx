@@ -112,8 +112,8 @@ export default function CommunityPage() {
             const isAdmin = author?.role === 'admin'
             return (
               <div key={post.id} className="card"
-                style={{ borderColor: isAdmin ? 'rgba(255,224,0,0.2)' : '#333',
-                  background: isAdmin ? 'rgba(255,224,0,0.03)' : '#222' }}>
+                style={{ borderColor: isAdmin ? 'rgba(255,224,0,0.35)' : '#E2E4EC',
+                  background: isAdmin ? 'rgba(255,224,0,0.04)' : '#FFFFFF' }}>
 
                 {/* Author row */}
                 <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', marginBottom:'0.9rem' }}>
@@ -132,7 +132,7 @@ export default function CommunityPage() {
                 </div>
 
                 {/* Content */}
-                <p style={{ fontSize:'0.95rem', lineHeight:'1.6', color:'#ddd', marginBottom:'1rem', whiteSpace:'pre-wrap' }}>
+                <p style={{ fontSize:'0.95rem', lineHeight:'1.6', color:'#333', marginBottom:'1rem', whiteSpace:'pre-wrap' }}>
                   {post.content}
                 </p>
 
@@ -140,8 +140,8 @@ export default function CommunityPage() {
                 <div style={{ display:'flex', alignItems:'center', gap:'1rem', paddingTop:'0.75rem', borderTop:'1px solid #E2E4EC' }}>
                   <button onClick={() => handleLike(post.id)}
                     style={{ display:'flex', alignItems:'center', gap:'0.35rem', background:'transparent', border:'none', cursor:'pointer',
-                      color: liked ? '#f87171' : '#555', fontSize:'0.85rem', fontWeight: liked ? '700' : '400', transition:'color 0.15s' }}>
-                    <Heart size={16} fill={liked ? '#f87171' : 'none'} stroke={liked ? '#f87171' : '#555'}/>
+                      color: liked ? '#f87171' : '#AAA', fontSize:'0.85rem', fontWeight: liked ? '700' : '400', transition:'color 0.15s' }}>
+                    <Heart size={16} fill={liked ? '#f87171' : 'none'} stroke={liked ? '#f87171' : '#AAA'}/>
                     {post.likes.length > 0 && post.likes.length}
                   </button>
                 </div>

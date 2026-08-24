@@ -49,7 +49,7 @@ export default function AdminOverview() {
         <h1 style={{ fontSize:'1.6rem', fontWeight:'800', marginBottom:'0.25rem' }}>
           Overview <span style={{ color:'#FFE000' }}>— Coach Jeyvi</span>
         </h1>
-        <p style={{ color:'#888', marginBottom:'2rem' }}>The Last Reset Program — Admin Dashboard</p>
+        <p style={{ color:'#888', marginBottom:'2rem' }}>The Last Reset Program: Admin Dashboard</p>
 
         {/* Stat cards */}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'1rem', marginBottom:'2rem' }}>
@@ -85,7 +85,7 @@ export default function AdminOverview() {
           </div>
           <div style={{ marginTop:'1rem', padding:'0.75rem', background:'rgba(255,224,0,0.05)', borderRadius:'6px', border:'1px solid rgba(255,224,0,0.1)' }}>
             <p style={{ fontSize:'0.82rem', color:'#888' }}>
-              Goal: <strong style={{ color:'#FFE000' }}>$10,000/month</strong> by September 2026 — current gap: ≈$8,002/month
+              Goal: <strong style={{ color:'#FFE000' }}>$10,000/month</strong> by September 2026: current gap: ≈$8,002/month
             </p>
           </div>
         </div>
