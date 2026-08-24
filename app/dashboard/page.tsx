@@ -1,10 +1,10 @@
 'use client'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Nav from '@/components/Nav'
 import { getSession, getCheckInsForClient, getWorkoutsForClient } from '@/lib/store'
 import { CheckIn, WorkoutLog } from '@/lib/types'
-import { Camera, Dumbbell, TrendingUp, CheckCircle, Clock, Bot, Flame, ChevronRight, Heart, ListChecks } from 'lucide-react'
+import { Camera, Dumbbell, TrendingUp, CheckCircle, Clock, Bot, Flame, ChevronRight, Heart, ListChecks, Scale, TrendingDown, MessageSquare, Star } from 'lucide-react'
 
 function MacroRing({ value, max, label, color, unit = 'g' }: {
   value: number; max: number; label: string; color: string; unit?: string
@@ -28,10 +28,10 @@ function MacroRing({ value, max, label, color, unit = 'g' }: {
   )
 }
 
-function StatCard({ emoji, value, unit, label, color }: { emoji:string; value:string; unit:string; label:string; color:string }) {
+function StatCard({ icon, value, unit, label, color }: { icon:React.ReactNode; value:string; unit:string; label:string; color:string }) {
   return (
     <div className="card" style={{ textAlign:'center', padding:'1rem 0.5rem' }}>
-      <div style={{ fontSize:'1.4rem', marginBottom:'0.3rem' }}>{emoji}</div>
+      <div style={{ display:'flex', justifyContent:'center', marginBottom:'0.3rem', color }}>{icon}</div>
       <div style={{ fontSize:'1.3rem', fontWeight:'800', color, lineHeight:1.1 }}>
         {value}
         <span style={{ fontSize:'0.62rem', color:'#AAA', fontWeight:'400' }}> {unit}</span>
@@ -121,11 +121,11 @@ export default function ClientDashboard() {
             <p style={{ fontSize:'0.8rem', color:'#AAA', marginBottom:'0.2rem', fontWeight:'500' }}>{dateStr}</p>
             <h1 style={{ fontSize:'1.7rem', fontWeight:'800', lineHeight:1.1 }}>
               {getGreeting()},<br/>
-              <span style={{ color:'#FFE000' }}>{user.name} 👋</span>
+              <span style={{ color:'#FFE000' }}>{user.name}</span>
             </h1>
           </div>
           <div style={{ background: streak > 0 ? '#FFE000' : '#F0F2F8', borderRadius:'14px', padding:'0.6rem 0.85rem', textAlign:'center', minWidth:'58px', boxShadow: streak > 0 ? '0 4px 12px rgba(255,224,0,0.3)' : 'none' }}>
-            <div style={{ fontSize:'1.4rem', lineHeight:1 }}>🔥</div>
+            <Flame size={22} style={{ color: streak > 0 ? '#1A1A1A' : '#CCC' }} />
             <div style={{ fontSize:'0.75rem', fontWeight:'800', color: streak > 0 ? '#1A1A1A' : '#AAA', marginTop:'0.2rem' }}>{streak}d</div>
           </div>
         </div>
@@ -188,9 +188,9 @@ export default function ClientDashboard() {
 
         {/* ── Stats row ── */}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'0.75rem', marginBottom:'1.25rem' }}>
-          <StatCard emoji="⚖️" value={latestWeight ? `${latestWeight}` : '—'} unit="kg" label="Current Weight" color="#FFE000" />
-          <StatCard emoji="📉" value={weightLost > 0 ? `${weightLost.toFixed(1)}` : '0'} unit="kg lost" label="Since You Started" color="#4ade80" />
-          <StatCard emoji="💪" value={`${workouts.length}`} unit="sessions" label="Total Logged" color="#60a5fa" />
+          <StatCard icon={<Scale size={20}/>} value={latestWeight ? `${latestWeight}` : '—'} unit="kg" label="Current Weight" color="#FFE000" />
+          <StatCard icon={<TrendingDown size={20}/>} value={weightLost > 0 ? `${weightLost.toFixed(1)}` : '0'} unit="kg lost" label="Since You Started" color="#4ade80" />
+          <StatCard icon={<Dumbbell size={20}/>} value={`${workouts.length}`} unit="sessions" label="Total Logged" color="#60a5fa" />
         </div>
 
         {/* ── Nutrition goals ── */}
@@ -238,7 +238,7 @@ export default function ClientDashboard() {
             { label:'AI Coach', sub:'Get real feedback', icon:<Bot size={20}/>, color:'rgba(255,224,0,0.15)', iconColor:'#997700', href:'/ai-coach' },
             { label:'Cycle Tracker', sub:'Hormones & cravings', icon:<Heart size={20}/>, color:'rgba(248,113,113,0.12)', iconColor:'#dc2626', href:'/cycle' },
             { label:'Workout Plan', sub:'6 muscle groups', icon:<ListChecks size={20}/>, color:'rgba(96,165,250,0.12)', iconColor:'#2563eb', href:'/plan' },
-            { label:'Community', sub:'Share your wins', icon:<span style={{fontSize:'1.1rem'}}>🌟</span>, color:'rgba(74,222,128,0.12)', iconColor:'#16a34a', href:'/community' },
+            { label:'Community', sub:'Share your wins', icon:<Star size={20}/>, color:'rgba(74,222,128,0.12)', iconColor:'#16a34a', href:'/community' },
           ].map(q => (
             <div key={q.href} className="card" onClick={() => router.push(q.href)}
               style={{ cursor:'pointer', display:'flex', alignItems:'center', gap:'0.85rem', padding:'1rem', transition:'box-shadow 0.15s' }}>
@@ -274,7 +274,7 @@ export default function ClientDashboard() {
                     padding:'0.75rem 0', borderBottom: idx < 4 ? '1px solid #F4F5FA' : 'none' }}>
                     <div>
                       <div style={{ fontSize:'0.88rem', fontWeight:'600' }}>{c.date}</div>
-                      {c.coach_feedback && <div style={{ fontSize:'0.73rem', color:'#888', marginTop:'0.1rem' }}>💬 {c.coach_feedback}</div>}
+                      {c.coach_feedback && <div style={{ fontSize:'0.73rem', color:'#888', marginTop:'0.1rem', display:'flex', alignItems:'center', gap:'0.25rem' }}><MessageSquare size={11}/> {c.coach_feedback}</div>}
                     </div>
                     <div style={{ textAlign:'right', display:'flex', alignItems:'center', gap:'0.75rem' }}>
                       <div>

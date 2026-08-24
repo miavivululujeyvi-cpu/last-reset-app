@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import Nav from '@/components/Nav'
 import { getSession, addCheckIn, getCheckInsForClient } from '@/lib/store'
 import { CheckIn } from '@/lib/types'
-import { CheckCircle, TrendingDown, TrendingUp, Minus } from 'lucide-react'
+import { CheckCircle, TrendingDown, TrendingUp, Minus, Droplets } from 'lucide-react'
 
 export default function CheckInPage() {
   const router = useRouter()
@@ -165,7 +165,7 @@ export default function CheckInPage() {
 
             {/* Rules reminder */}
             <div style={{ background:'#F4F5FA', borderRadius:'12px', padding:'1rem', display:'flex', gap:'0.75rem' }}>
-              <div style={{ fontSize:'1.2rem', flexShrink:0 }}>💧</div>
+              <Droplets size={20} style={{ color:'#60a5fa', flexShrink:0 }} />
               <p style={{ fontSize:'0.78rem', color:'#666', lineHeight:'1.6', margin:0 }}>
                 <strong>Program rule:</strong> 3 liters of water today. Zero sugar. If you struggle, message your AI coach immediately.
               </p>

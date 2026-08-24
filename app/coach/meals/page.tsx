@@ -4,10 +4,18 @@ import { useRouter } from 'next/navigation'
 import Nav from '@/components/Nav'
 import { getSession, getAllMeals, getMeals, getUsers, rateMeal } from '@/lib/store'
 import { MealLog, User } from '@/lib/types'
-import { Star, Clock, ChevronLeft } from 'lucide-react'
+import { Star, Clock, ChevronLeft, Sunrise, Sun, Moon, Apple, UtensilsCrossed } from 'lucide-react'
+import { MealType } from '@/lib/types'
 
-const MEAL_EMOJI: Record<string, string> = {
-  breakfast: '🌅', lunch: '☀️', dinner: '🌙', snack: '🍎'
+function MealIcon({ type, size = 14, color = '#fff' }: { type: string; size?: number; color?: string }) {
+  const props = { size, style: { color } }
+  switch (type) {
+    case 'breakfast': return <Sunrise {...props} />
+    case 'lunch':     return <Sun {...props} />
+    case 'dinner':    return <Moon {...props} />
+    case 'snack':     return <Apple {...props} />
+    default:          return null
+  }
 }
 
 function timeAgo(iso: string) {
@@ -107,7 +115,7 @@ export default function CoachMealsPage() {
         {/* Meal grid */}
         {filtered.length === 0 ? (
           <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-            <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🍽️</div>
+            <UtensilsCrossed size={48} style={{ margin: '0 auto 0.75rem', color: '#E2E4EC', display: 'block' }} />
             <p style={{ color: '#888' }}>No meals to review yet.</p>
           </div>
         ) : (
@@ -118,8 +126,9 @@ export default function CoachMealsPage() {
                 <div key={meal.id} className="card" style={{ padding: 0, overflow: 'hidden', cursor: 'pointer' }} onClick={() => openRating(meal)}>
                   <div style={{ position: 'relative' }}>
                     <img src={meal.photo} alt={meal.meal_type} style={{ width: '100%', height: '180px', objectFit: 'cover', display: 'block' }} />
-                    <div style={{ position: 'absolute', top: '0.6rem', left: '0.6rem', background: 'rgba(0,0,0,0.55)', borderRadius: '8px', padding: '0.3rem 0.6rem', fontSize: '0.72rem', fontWeight: '700', color: '#FFFFFF' }}>
-                      {MEAL_EMOJI[meal.meal_type]} {meal.meal_type}
+                    <div style={{ position: 'absolute', top: '0.6rem', left: '0.6rem', background: 'rgba(0,0,0,0.55)', borderRadius: '8px', padding: '0.3rem 0.6rem', fontSize: '0.72rem', fontWeight: '700', color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <MealIcon type={meal.meal_type} size={12} color="#FFFFFF" />
+                      {meal.meal_type}
                     </div>
                     {meal.rating != null && (
                       <div style={{ position: 'absolute', top: '0.6rem', right: '0.6rem', background: ratingColor(meal.rating), borderRadius: '8px', padding: '0.3rem 0.6rem', fontSize: '0.82rem', fontWeight: '800', color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
@@ -160,9 +169,12 @@ export default function CoachMealsPage() {
           <div style={{ background: '#FFFFFF', borderRadius: '20px 20px 0 0', padding: '1.5rem', width: '100%', maxWidth: '500px' }}>
             <div style={{ width: '36px', height: '4px', borderRadius: '2px', background: '#E2E4EC', margin: '0 auto 1.25rem' }} />
             <h3 style={{ fontWeight: '800', fontSize: '1.1rem', marginBottom: '0.25rem' }}>Rate this meal</h3>
-            <p style={{ fontSize: '0.82rem', color: '#888', marginBottom: '1.25rem' }}>
-              {userMap[ratingModal.meal.client_id]?.name} · {MEAL_EMOJI[ratingModal.meal.meal_type]} {ratingModal.meal.meal_type}
-              {ratingModal.meal.description ? ` · ${ratingModal.meal.description}` : ''}
+            <p style={{ fontSize: '0.82rem', color: '#888', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.3rem', flexWrap: 'wrap' }}>
+              <span>{userMap[ratingModal.meal.client_id]?.name}</span>
+              <span>·</span>
+              <MealIcon type={ratingModal.meal.meal_type} size={13} color="#888" />
+              <span>{ratingModal.meal.meal_type}</span>
+              {ratingModal.meal.description && <><span>·</span><span>{ratingModal.meal.description}</span></>}
             </p>
             <img src={ratingModal.meal.photo} alt="" style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '12px', marginBottom: '1.25rem' }} />
 

@@ -4,14 +4,25 @@ import { useRouter } from 'next/navigation'
 import Nav from '@/components/Nav'
 import { getSession, getMealsForClient, addMeal, getUsers } from '@/lib/store'
 import { MealLog, MealType } from '@/lib/types'
-import { Camera, Star, Clock, ChevronDown } from 'lucide-react'
+import { Camera, Star, Clock, ChevronDown, Sunrise, Sun, Moon, Apple } from 'lucide-react'
 
-const MEAL_TYPES: { value: MealType; label: string; emoji: string; time: string }[] = [
-  { value: 'breakfast', label: 'Breakfast', emoji: '🌅', time: '6–10am' },
-  { value: 'lunch',     label: 'Lunch',     emoji: '☀️',  time: '11am–2pm' },
-  { value: 'dinner',    label: 'Dinner',    emoji: '🌙', time: '5–9pm' },
-  { value: 'snack',     label: 'Snack',     emoji: '🍎', time: 'Any time' },
+const MEAL_TYPES: { value: MealType; label: string; time: string }[] = [
+  { value: 'breakfast', label: 'Breakfast', time: '6:10am' },
+  { value: 'lunch',     label: 'Lunch',     time: '11am:2pm' },
+  { value: 'dinner',    label: 'Dinner',    time: '5:9pm' },
+  { value: 'snack',     label: 'Snack',     time: 'Any time' },
 ]
+
+function MealIcon({ type, size = 18, color = 'currentColor' }: { type: MealType; size?: number; color?: string }) {
+  const props = { size, style: { color } }
+  switch (type) {
+    case 'breakfast': return <Sunrise {...props} />
+    case 'lunch':     return <Sun {...props} />
+    case 'dinner':    return <Moon {...props} />
+    case 'snack':     return <Apple {...props} />
+    default:          return null
+  }
+}
 
 function timeAgo(iso: string) {
   const diff = (Date.now() - new Date(iso).getTime()) / 1000
@@ -154,7 +165,7 @@ export default function MealsPage() {
                   {MEAL_TYPES.map(t => (
                     <button key={t.value} type="button" onClick={() => setSelectedType(t.value)}
                       style={{ padding: '0.6rem 0.25rem', borderRadius: '10px', border: '2px solid', borderColor: selectedType === t.value ? '#FFE000' : '#E2E4EC', background: selectedType === t.value ? 'rgba(255,224,0,0.1)' : '#FFFFFF', cursor: 'pointer', fontSize: '0.78rem', fontWeight: '700', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem' }}>
-                      <span style={{ fontSize: '1.2rem' }}>{t.emoji}</span>
+                      <MealIcon type={t.value} size={18} />
                       <span style={{ color: selectedType === t.value ? '#1A1A1A' : '#888' }}>{t.label}</span>
                     </button>
                   ))}
@@ -178,7 +189,7 @@ export default function MealsPage() {
             const logged = todayMeals.some(m => m.meal_type === t.value)
             return (
               <div key={t.value} style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.45rem 0.85rem', borderRadius: '20px', background: logged ? 'rgba(22,163,74,0.1)' : '#FFFFFF', border: `1px solid ${logged ? 'rgba(22,163,74,0.25)' : '#E2E4EC'}`, fontSize: '0.78rem', fontWeight: '600', color: logged ? '#16a34a' : '#999' }}>
-                <span>{t.emoji}</span>
+                <MealIcon type={t.value} size={13} color={logged ? '#16a34a' : '#999'} />
                 <span>{t.label}</span>
                 {logged && <span style={{ fontSize: '0.9rem' }}>✓</span>}
               </div>
@@ -198,7 +209,7 @@ export default function MealsPage() {
         {/* Meal feed */}
         {filtered.length === 0 ? (
           <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '0.75rem' }}>📸</div>
+            <Camera size={48} style={{ margin: '0 auto 0.75rem', color: '#E2E4EC', display: 'block' }} />
             <p style={{ color: '#888', marginBottom: '1.25rem' }}>No meals logged yet today.</p>
             <p style={{ fontSize: '0.82rem', color: '#BBB' }}>Your coach is watching. Log every meal.</p>
           </div>
@@ -212,7 +223,10 @@ export default function MealsPage() {
                   <div style={{ padding: '1rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
                       <div>
-                        <span style={{ fontWeight: '700', fontSize: '0.95rem' }}>{type?.emoji} {type?.label}</span>
+                        <span style={{ fontWeight: '700', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                          <MealIcon type={meal.meal_type} size={16} color="#555" />
+                          {type?.label}
+                        </span>
                         {meal.description && <p style={{ fontSize: '0.82rem', color: '#666', marginTop: '0.2rem' }}>{meal.description}</p>}
                       </div>
                       <div style={{ textAlign: 'right', flexShrink: 0 }}>

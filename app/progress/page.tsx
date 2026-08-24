@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import Nav from '@/components/Nav'
 import { getSession, getCheckInsForClient, getWorkoutsForClient, getMealsForClient } from '@/lib/store'
 import { CheckIn, WorkoutLog, MealLog } from '@/lib/types'
-import { TrendingDown, Dumbbell, Calendar, TrendingUp, Award, Star } from 'lucide-react'
+import { TrendingDown, Dumbbell, Calendar, TrendingUp, Award, Star, Scale, UtensilsCrossed } from 'lucide-react'
 
 export default function ProgressPage() {
   const router = useRouter()
@@ -65,9 +65,9 @@ export default function ProgressPage() {
         {/* ── Tabs ── */}
         <div style={{ display:'flex', gap:'0.5rem', marginBottom:'1.25rem', overflowX:'auto', paddingBottom:'0.25rem' }} className="scroll-hide">
           {([
-            { key:'weight', label:'⚖️ Weight' },
-            { key:'workouts', label:'💪 Workouts' },
-            { key:'report', label:'📋 Report Card' },
+            { key:'weight', label:'Weight' },
+            { key:'workouts', label:'Workouts' },
+            { key:'report', label:'Report Card' },
           ] as const).map(t => (
             <button key={t.key} onClick={() => setTab(t.key)}
               style={{ padding:'0.6rem 1.1rem', borderRadius:'10px', border:'none', cursor:'pointer', fontSize:'0.85rem', fontWeight:'700', flexShrink:0,
@@ -217,12 +217,12 @@ export default function ProgressPage() {
                 {/* Three scores */}
                 <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'0.75rem', marginBottom:'1.25rem' }}>
                   {[
-                    { label:'Meals', emoji:'🍽️', score: current.mlScore, sub: current.ratedCount > 0 ? `${current.ratedCount} rated` : 'Pending rating', pending: current.mlScore == null },
-                    { label:'Workouts', emoji:'💪', score: current.woScore, sub: `${current.woDays} of 3 sessions`, pending: false },
-                    { label:'Check-ins', emoji:'⚖️', score: current.ciScore, sub: `${current.ciDays} of 7 days`, pending: false },
+                    { label:'Meals', icon:<UtensilsCrossed size={18}/>, score: current.mlScore, sub: current.ratedCount > 0 ? `${current.ratedCount} rated` : 'Pending rating', pending: current.mlScore == null },
+                    { label:'Workouts', icon:<Dumbbell size={18}/>, score: current.woScore, sub: `${current.woDays} of 3 sessions`, pending: false },
+                    { label:'Check-ins', icon:<Scale size={18}/>, score: current.ciScore, sub: `${current.ciDays} of 7 days`, pending: false },
                   ].map(c => (
                     <div key={c.label} style={{ background:'rgba(255,255,255,0.07)', borderRadius:'12px', padding:'0.85rem 0.5rem', textAlign:'center' }}>
-                      <div style={{ fontSize:'1.1rem', marginBottom:'0.3rem' }}>{c.emoji}</div>
+                      <div style={{ display:'flex', justifyContent:'center', marginBottom:'0.3rem', color:'rgba(255,255,255,0.5)' }}>{c.icon}</div>
                       <div style={{ fontSize:'1.6rem', fontWeight:'900', color: c.pending ? '#666' : scoreColor(c.score!), lineHeight:1 }}>
                         {c.pending ? '—' : c.score}
                         {!c.pending && <span style={{ fontSize:'0.65rem', color:'#888', fontWeight:'400' }}>/10</span>}
@@ -261,9 +261,9 @@ export default function ProgressPage() {
                             {isThis ? 'This week' : weekLabel(wk)}
                           </div>
                           <div style={{ display:'flex', gap:'0.75rem', fontSize:'0.68rem', color:'#999' }}>
-                            <span>🍽️ {w.mlScore != null ? `${w.mlScore}/10` : '—'}</span>
-                            <span>💪 {w.woScore}/10</span>
-                            <span>⚖️ {w.ciScore}/10</span>
+                            <span>Meals: {w.mlScore != null ? `${w.mlScore}/10` : '—'}</span>
+                            <span>Workouts: {w.woScore}/10</span>
+                            <span>Check-ins: {w.ciScore}/10</span>
                           </div>
                         </div>
                         <div style={{ textAlign:'right', flexShrink:0 }}>
@@ -303,8 +303,8 @@ export default function ProgressPage() {
                     <div style={{ fontWeight:'800', color:'#1A1A1A', fontSize:'0.95rem' }}>{w.date}</div>
                     <div style={{ fontSize:'0.75rem', color:'#888', marginTop:'0.1rem' }}>{w.exercises.length} exercises</div>
                   </div>
-                  <div style={{ background:'rgba(255,224,0,0.12)', borderRadius:'10px', padding:'0.4rem 0.75rem', fontSize:'0.75rem', fontWeight:'700', color:'#997700' }}>
-                    💪 Completed
+                  <div style={{ background:'rgba(255,224,0,0.12)', borderRadius:'10px', padding:'0.4rem 0.75rem', fontSize:'0.75rem', fontWeight:'700', color:'#997700', display:'flex', alignItems:'center', gap:'0.35rem' }}>
+                    <Dumbbell size={13}/> Completed
                   </div>
                 </div>
                 <div style={{ display:'flex', flexDirection:'column', gap:'0.5rem' }}>

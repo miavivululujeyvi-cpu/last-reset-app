@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Nav from '@/components/Nav'
 import { getSession, getCycleData, saveCycleData } from '@/lib/store'
+import { Droplets, Leaf, Zap, AlertCircle } from 'lucide-react'
 
 const PHASES = [
   {
@@ -11,7 +12,6 @@ const PHASES = [
     color: '#f87171',
     risk: 'Moderate Risk',
     riskColor: '#f87171',
-    icon: '🩸',
     summary: 'Your body is shedding. Energy is low and iron drops. Cravings for sugar and comfort food are real.',
     tips: [
       'Increase iron: eat red meat, spinach, lentils',
@@ -26,7 +26,6 @@ const PHASES = [
     color: '#4ade80',
     risk: 'Low Risk',
     riskColor: '#4ade80',
-    icon: '🌱',
     summary: 'Estrogen is rising. Energy comes back. This is your strongest phase for discipline and sticking to the diet.',
     tips: [
       'Best time to start a new habit or reset',
@@ -41,7 +40,6 @@ const PHASES = [
     color: '#FFE000',
     risk: 'Lowest Risk',
     riskColor: '#FFE000',
-    icon: '⚡',
     summary: 'Peak estrogen. You feel your best. Mood is high, energy is high, discipline is easiest.',
     tips: [
       'Hardest workouts of the month go here',
@@ -56,7 +54,6 @@ const PHASES = [
     color: '#f97316',
     risk: 'HIGHEST RISK',
     riskColor: '#f97316',
-    icon: '⚠️',
     summary: 'Progesterone rises. PMS begins. Cravings for sugar and carbs are the strongest of the month. This is where most women fall off their diet.',
     tips: [
       'Plan your meals ahead: do NOT rely on willpower',
@@ -81,6 +78,17 @@ function getDayOfCycle(lastPeriod: string): number {
   const today = new Date()
   const diff = Math.floor((today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
   return (diff % 28) + 1
+}
+
+function PhaseIcon({ name, color, size = 18 }: { name: string; color: string; size?: number }) {
+  const props = { size, style: { color } }
+  switch (name) {
+    case 'Menstrual':  return <Droplets {...props} />
+    case 'Follicular': return <Leaf {...props} />
+    case 'Ovulation':  return <Zap {...props} />
+    case 'Luteal':     return <AlertCircle {...props} />
+    default:           return null
+  }
 }
 
 export default function CyclePage() {
@@ -180,8 +188,9 @@ export default function CyclePage() {
                   </div>
                 </div>
               </div>
-              <div style={{ fontWeight: '700', fontSize: '1.1rem', marginBottom: '0.5rem' }}>
-                {currentPhase.icon} {currentPhase.name} Phase
+              <div style={{ fontWeight: '700', fontSize: '1.1rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <PhaseIcon name={currentPhase.name} color={currentPhase.color} />
+                {currentPhase.name} Phase
               </div>
               <p style={{ color: '#666', fontSize: '0.88rem', lineHeight: '1.55' }}>{currentPhase.summary}</p>
               <button onClick={() => setEditing(true)}
@@ -248,8 +257,9 @@ export default function CyclePage() {
                 return (
                   <div key={phase.name} className="card" style={{ border: isActive ? `2px solid ${phase.color}` : '1px solid #E0E0EC', opacity: isActive ? 1 : 0.7 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-                      <div style={{ fontWeight: '700', fontSize: '0.9rem' }}>
-                        {phase.icon} {phase.name} Phase
+                      <div style={{ fontWeight: '700', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <PhaseIcon name={phase.name} color={phase.color} />
+                        {phase.name} Phase
                         {isActive && <span style={{ marginLeft: '0.5rem', fontSize: '0.72rem', background: `${phase.color}22`, color: phase.color, padding: '0.15rem 0.5rem', borderRadius: '10px' }}>YOU ARE HERE</span>}
                       </div>
                       <div style={{ textAlign: 'right' }}>
