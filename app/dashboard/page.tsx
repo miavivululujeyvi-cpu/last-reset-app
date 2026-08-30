@@ -82,8 +82,8 @@ const S = {
   bandImg: {
     width: '100%',
     height: '100%',
-    objectFit: 'contain' as const,
-    objectPosition: 'center top',
+    objectFit: 'cover' as const,
+    objectPosition: 'center 15%',
     display: 'block',
     mixBlendMode: 'multiply' as const,
   } as React.CSSProperties,
@@ -130,7 +130,7 @@ const S = {
 
   // Title block
   titleBlock: {
-    paddingTop: 28,
+    paddingTop: 14,
     paddingLeft: 22,
     paddingRight: 22,
     paddingBottom: 0,
