@@ -74,7 +74,7 @@ const S = {
   band: {
     position: 'relative',
     width: '100%',
-    height: 310,
+    height: 248,
     background: '#EDEDF1',
     overflow: 'hidden',
   } as React.CSSProperties,
@@ -130,7 +130,7 @@ const S = {
 
   // Title block
   titleBlock: {
-    paddingTop: 58,
+    paddingTop: 12,
     paddingLeft: 22,
     paddingRight: 22,
     paddingBottom: 0,
