@@ -85,6 +85,7 @@ const S = {
     objectFit: 'contain' as const,
     objectPosition: 'center top',
     display: 'block',
+    mixBlendMode: 'multiply' as const,
   } as React.CSSProperties,
 
   bandOverlays: {
@@ -443,7 +444,7 @@ export default function ClientDashboard() {
         {/* ── 1. Photo band ─────────────────────────────────── */}
         <div style={S.band}>
           <img
-            src="/coach.png"
+            src="/coach.webp"
             alt="Coach"
             style={S.bandImg}
             onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
@@ -506,10 +507,18 @@ export default function ClientDashboard() {
 
               {/* Photo slot */}
               <div style={S.sessionPhoto}>
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C2C3CC" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M6.5 6.5h.01M3 8l2-3h14l2 3v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-                  <circle cx="12" cy="13" r="3"/>
-                </svg>
+                <img
+                  src="/coach.webp"
+                  alt="Session"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    objectPosition: 'center 20%',
+                    mixBlendMode: 'multiply',
+                  }}
+                  onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+                />
               </div>
             </div>
 
@@ -577,9 +586,9 @@ export default function ClientDashboard() {
               {/* Coach avatar */}
               <div style={S.coachAvatar}>
                 <img
-                  src="/coach.png"
+                  src="/coach.webp"
                   alt="Coach Jeyvi"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', mixBlendMode: 'multiply' }}
                   onError={e => {
                     const el = e.target as HTMLImageElement
                     el.style.display = 'none'
