@@ -508,14 +508,13 @@ export default function ClientDashboard() {
               {/* Photo slot */}
               <div style={S.sessionPhoto}>
                 <img
-                  src="/coach.webp"
+                  src="/workout.jpg"
                   alt="Session"
                   style={{
                     width: '100%',
                     height: '100%',
                     objectFit: 'cover',
-                    objectPosition: 'center 20%',
-                    mixBlendMode: 'multiply',
+                    objectPosition: 'center 30%',
                   }}
                   onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
                 />
