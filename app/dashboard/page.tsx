@@ -4,72 +4,18 @@ import { useRouter } from 'next/navigation'
 import Nav from '@/components/Nav'
 import { getSession, getCheckInsForClient, getWorkoutsForClient } from '@/lib/store'
 import { CheckIn, WorkoutLog } from '@/lib/types'
-import { Camera, Dumbbell, TrendingUp, CheckCircle, Clock, Bot, Flame, ChevronRight, Heart, ListChecks, Scale, TrendingDown, MessageSquare, Star } from 'lucide-react'
 
-function MacroRing({ value, max, label, color, unit = 'g' }: {
-  value: number; max: number; label: string; color: string; unit?: string
-}) {
-  const r = 28
-  const circ = 2 * Math.PI * r
-  const pct = Math.min(value / max, 1)
-  const dash = pct * circ
-  return (
-    <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:'0.35rem' }}>
-      <svg width="70" height="70" viewBox="0 0 70 70">
-        <circle cx="35" cy="35" r={r} fill="none" stroke="#F0F2F8" strokeWidth="6"/>
-        <circle cx="35" cy="35" r={r} fill="none" stroke={color} strokeWidth="6"
-          strokeDasharray={`${dash} ${circ}`} strokeLinecap="round"
-          transform="rotate(-90 35 35)"/>
-        <text x="35" y="33" textAnchor="middle" fill="#1A1A1A" fontSize="11" fontWeight="800" fontFamily="Arial">{value}</text>
-        <text x="35" y="45" textAnchor="middle" fill="#999" fontSize="9" fontFamily="Arial">{unit}</text>
-      </svg>
-      <span style={{ fontSize:'0.7rem', color:'#666', fontWeight:'600' }}>{label}</span>
-    </div>
-  )
-}
+const TOTAL_WEEKS = 12
 
-function StatCard({ icon, value, unit, label, color }: { icon:React.ReactNode; value:string; unit:string; label:string; color:string }) {
-  return (
-    <div className="card" style={{ textAlign:'center', padding:'1rem 0.5rem' }}>
-      <div style={{ display:'flex', justifyContent:'center', marginBottom:'0.3rem', color }}>{icon}</div>
-      <div style={{ fontSize:'1.3rem', fontWeight:'800', color, lineHeight:1.1 }}>
-        {value}
-        <span style={{ fontSize:'0.62rem', color:'#AAA', fontWeight:'400' }}> {unit}</span>
-      </div>
-      <div style={{ fontSize:'0.65rem', color:'#999', marginTop:'0.25rem', lineHeight:1.3 }}>{label}</div>
-    </div>
-  )
-}
-
-function TaskRow({ done, label, sub, action, icon }: { done:boolean; label:string; sub:string; action:()=>void; icon:React.ReactNode }) {
-  return (
-    <div onClick={!done ? action : undefined}
-      style={{ display:'flex', alignItems:'center', gap:'1rem', padding:'0.85rem 1rem',
-        background: done ? 'rgba(34,197,94,0.06)' : 'rgba(255,224,0,0.07)',
-        borderRadius:'12px', border:`1px solid ${done ? 'rgba(34,197,94,0.2)' : 'rgba(255,224,0,0.3)'}`,
-        cursor: done ? 'default' : 'pointer' }}>
-      <div style={{ width:'38px', height:'38px', borderRadius:'10px', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center',
-        background: done ? 'rgba(34,197,94,0.12)' : 'rgba(255,224,0,0.12)',
-        color: done ? '#16a34a' : '#997700' }}>
-        {done ? <CheckCircle size={20}/> : icon}
-      </div>
-      <div style={{ flex:1 }}>
-        <div style={{ fontSize:'0.92rem', fontWeight:'700', color: done ? '#16a34a' : '#1A1A1A' }}>{label}</div>
-        <div style={{ fontSize:'0.75rem', color:'#888', marginTop:'0.1rem' }}>{sub}</div>
-      </div>
-      {done
-        ? <span className="badge badge-green">Done ✓</span>
-        : <div style={{ color:'#FFE000' }}><ChevronRight size={18}/></div>}
-    </div>
-  )
-}
+// ── helpers ───────────────────────────────────────────────────────────────────
 
 function calcStreak(checkins: CheckIn[]): number {
   if (!checkins.length) return 0
-  let streak = 0
   const today = new Date()
-  for (let i = 0; i < 60; i++) {
-    const d = new Date(today); d.setDate(d.getDate() - i)
+  let streak = 0
+  for (let i = 0; i < 90; i++) {
+    const d = new Date(today)
+    d.setDate(d.getDate() - i)
     const ds = d.toISOString().split('T')[0]
     if (checkins.find(c => c.date === ds)) streak++
     else if (i > 0) break
@@ -77,16 +23,381 @@ function calcStreak(checkins: CheckIn[]): number {
   return streak
 }
 
-function getGreeting() {
-  const h = new Date().getHours()
-  if (h < 12) return 'Good morning'
-  if (h < 17) return 'Good afternoon'
-  return 'Good evening'
+function calcWeekAndDay(checkins: CheckIn[]): { week: number; day: number } {
+  if (!checkins.length) return { week: 1, day: 1 }
+  const sorted = [...checkins].sort((a, b) => a.date.localeCompare(b.date))
+  const start = new Date(sorted[0].date)
+  const now = new Date()
+  const days = Math.max(0, Math.floor((now.getTime() - start.getTime()) / 86_400_000))
+  const day = days + 1
+  const week = Math.min(Math.max(1, Math.ceil(day / 7)), TOTAL_WEEKS)
+  return { week, day }
+}
+
+function getPhase(week: number): { phase: number; label: string } {
+  if (week <= 4)  return { phase: 1, label: 'FOUNDATION' }
+  if (week <= 8)  return { phase: 2, label: 'IGNITE' }
+  return { phase: 3, label: 'RESET' }
+}
+
+function getMilestone(day: number, name: string): string {
+  const half = Math.round((TOTAL_WEEKS * 7) / 2)
+  if (day === 1)   return `Let's go, ${name}.`
+  if (day <= 7)    return `Strong start, ${name}.`
+  if (day === half) return `Halfway, ${name}.`
+  if (day <= 42)   return `Building habits, ${name}.`
+  if (day <= 70)   return `Halfway there, ${name}.`
+  if (day <= 80)   return `Almost there, ${name}.`
+  return `Last push, ${name}.`
+}
+
+function getDayLabel(day: number): string {
+  const weekday = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase()
+  return `${weekday} · DAY ${day}`
+}
+
+// ── component ─────────────────────────────────────────────────────────────────
+
+const S = {
+  page: {
+    background: '#F6F6F9',
+    minHeight: '100vh',
+  } as React.CSSProperties,
+
+  inner: {
+    maxWidth: 390,
+    margin: '0 auto',
+    paddingBottom: 100,
+  } as React.CSSProperties,
+
+  // Photo band
+  band: {
+    position: 'relative',
+    width: '100%',
+    height: 310,
+    background: '#EDEDF1',
+    overflow: 'hidden',
+  } as React.CSSProperties,
+
+  bandImg: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'contain' as const,
+    objectPosition: 'center top',
+    display: 'block',
+  } as React.CSSProperties,
+
+  bandOverlays: {
+    position: 'absolute',
+    inset: 0,
+    pointerEvents: 'none',
+  } as React.CSSProperties,
+
+  pill: {
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    background: '#FFE000',
+    borderRadius: 99,
+    padding: '7px 13px',
+    fontWeight: 800,
+    fontSize: 10,
+    letterSpacing: '0.14em',
+    color: '#1A1A1A',
+    lineHeight: 1,
+  } as React.CSSProperties,
+
+  avatar: {
+    position: 'absolute',
+    top: 12,
+    right: 16,
+    width: 38,
+    height: 38,
+    borderRadius: '50%',
+    background: '#FFFFFF',
+    boxShadow: '0 4px 14px rgba(0,0,0,.12)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: 800,
+    fontSize: 15,
+    color: '#1A1A1A',
+    overflow: 'hidden',
+    cursor: 'pointer',
+    pointerEvents: 'auto' as const,
+  } as React.CSSProperties,
+
+  // Title block
+  titleBlock: {
+    paddingTop: 28,
+    paddingLeft: 22,
+    paddingRight: 22,
+    paddingBottom: 0,
+  } as React.CSSProperties,
+
+  eyebrow: {
+    fontWeight: 800,
+    fontSize: 10,
+    letterSpacing: '0.2em',
+    color: '#8A8A90',
+    marginBottom: 6,
+    textTransform: 'uppercase' as const,
+  } as React.CSSProperties,
+
+  headline: {
+    fontWeight: 800,
+    fontSize: 30,
+    lineHeight: 1.05,
+    letterSpacing: '-0.04em',
+    color: '#1A1A1A',
+    whiteSpace: 'nowrap' as const,
+  } as React.CSSProperties,
+
+  // Week bar
+  weekBarWrap: {
+    paddingLeft: 22,
+    paddingRight: 22,
+    marginTop: 20,
+  } as React.CSSProperties,
+
+  weekBarSegments: {
+    display: 'flex',
+    gap: 3,
+    marginBottom: 7,
+  } as React.CSSProperties,
+
+  weekBarCaption: {
+    display: 'flex',
+    justifyContent: 'space-between',
+  } as React.CSSProperties,
+
+  weekCaption: {
+    fontWeight: 700,
+    fontSize: 9,
+    letterSpacing: '0.14em',
+    color: '#A9A9B2',
+    textTransform: 'uppercase' as const,
+  } as React.CSSProperties,
+
+  // Section gap
+  section: {
+    paddingLeft: 22,
+    paddingRight: 22,
+    marginTop: 12,
+  } as React.CSSProperties,
+
+  // Session card
+  sessionCard: {
+    background: '#FFFFFF',
+    borderRadius: 26,
+    boxShadow: '0 4px 20px rgba(20,20,40,.06)',
+    overflow: 'hidden',
+  } as React.CSSProperties,
+
+  sessionBody: {
+    display: 'flex',
+    gap: 0,
+  } as React.CSSProperties,
+
+  sessionText: {
+    flex: 1,
+    padding: '18px 0 18px 20px',
+    minWidth: 0,
+  } as React.CSSProperties,
+
+  sessionEyebrow: {
+    fontWeight: 700,
+    fontSize: 9,
+    letterSpacing: '0.14em',
+    color: '#A9A9B2',
+    textTransform: 'uppercase' as const,
+    marginBottom: 8,
+  } as React.CSSProperties,
+
+  sessionTitle: {
+    fontWeight: 800,
+    fontSize: 24,
+    lineHeight: 1.1,
+    letterSpacing: '-0.035em',
+    color: '#1A1A1A',
+    marginBottom: 8,
+  } as React.CSSProperties,
+
+  sessionMeta: {
+    fontWeight: 600,
+    fontSize: 11,
+    color: '#8A8A90',
+    whiteSpace: 'nowrap' as const,
+  } as React.CSSProperties,
+
+  sessionSep: {
+    color: '#D8D9E0',
+    margin: '0 5px',
+  } as React.CSSProperties,
+
+  sessionPhoto: {
+    width: 92,
+    flexShrink: 0,
+    background: '#EDEDF1',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  } as React.CSSProperties,
+
+  sessionFooter: {
+    display: 'flex',
+    gap: 10,
+    padding: '0 16px 16px',
+  } as React.CSSProperties,
+
+  btnPrimary: {
+    flex: 1,
+    background: '#FFE000',
+    color: '#1A1A1A',
+    border: 'none',
+    borderRadius: 16,
+    padding: '15px 0',
+    fontWeight: 800,
+    fontSize: 14,
+    cursor: 'pointer',
+    lineHeight: 1,
+  } as React.CSSProperties,
+
+  btnSecondary: {
+    background: '#FFFFFF',
+    color: '#1A1A1A',
+    border: '1px solid #E6E7ED',
+    borderRadius: 16,
+    padding: '15px 20px',
+    fontWeight: 700,
+    fontSize: 14,
+    cursor: 'pointer',
+    lineHeight: 1,
+  } as React.CSSProperties,
+
+  // Stat tiles
+  tilesGrid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr 1fr',
+    gap: 9,
+  } as React.CSSProperties,
+
+  tile: {
+    background: '#FFFFFF',
+    borderRadius: 20,
+    padding: '14px 14px 12px',
+    boxShadow: '0 3px 14px rgba(20,20,40,.05)',
+  } as React.CSSProperties,
+
+  tileDark: {
+    background: '#1A1A1A',
+    borderRadius: 20,
+    padding: '14px 14px 12px',
+    boxShadow: '0 3px 14px rgba(20,20,40,.05)',
+  } as React.CSSProperties,
+
+  tileValue: {
+    fontWeight: 800,
+    fontSize: 20,
+    letterSpacing: '-0.03em',
+    color: '#1A1A1A',
+    lineHeight: 1.1,
+  } as React.CSSProperties,
+
+  tileValueDark: {
+    fontWeight: 800,
+    fontSize: 20,
+    letterSpacing: '-0.03em',
+    color: '#FFE000',
+    lineHeight: 1.1,
+  } as React.CSSProperties,
+
+  tileLabel: {
+    fontWeight: 700,
+    fontSize: 8.5,
+    letterSpacing: '0.12em',
+    color: '#A9A9B2',
+    textTransform: 'uppercase' as const,
+    marginTop: 5,
+  } as React.CSSProperties,
+
+  tileLabelDark: {
+    fontWeight: 700,
+    fontSize: 8.5,
+    letterSpacing: '0.12em',
+    color: 'rgba(255,255,255,.55)',
+    textTransform: 'uppercase' as const,
+    marginTop: 5,
+  } as React.CSSProperties,
+
+  tileDelta: {
+    fontWeight: 800,
+    fontSize: 10,
+    marginTop: 4,
+  } as React.CSSProperties,
+
+  // Coach note card
+  coachCard: {
+    background: '#FFFFFF',
+    borderRadius: 26,
+    boxShadow: '0 3px 14px rgba(20,20,40,.05)',
+    padding: '16px 18px',
+  } as React.CSSProperties,
+
+  coachHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 10,
+  } as React.CSSProperties,
+
+  coachAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: '50%',
+    background: '#EDEDF1',
+    overflow: 'hidden',
+    flexShrink: 0,
+  } as React.CSSProperties,
+
+  coachName: {
+    fontWeight: 800,
+    fontSize: 12,
+    color: '#1A1A1A',
+    lineHeight: 1.2,
+  } as React.CSSProperties,
+
+  coachTime: {
+    fontWeight: 600,
+    fontSize: 10,
+    color: '#A9A9B2',
+    marginTop: 1,
+  } as React.CSSProperties,
+
+  coachBody: {
+    fontWeight: 400,
+    fontSize: 12.5,
+    lineHeight: 1.5,
+    color: '#6E6E76',
+    marginBottom: 12,
+  } as React.CSSProperties,
+
+  replyBtn: {
+    background: 'transparent',
+    border: '1px solid #E6E7ED',
+    borderRadius: 14,
+    padding: '8px 18px',
+    fontWeight: 700,
+    fontSize: 12,
+    color: '#1A1A1A',
+    cursor: 'pointer',
+  } as React.CSSProperties,
 }
 
 export default function ClientDashboard() {
   const router = useRouter()
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser]       = useState<any>(null)
   const [checkins, setCheckins] = useState<CheckIn[]>([])
   const [workouts, setWorkouts] = useState<WorkoutLog[]>([])
 
@@ -101,196 +412,193 @@ export default function ClientDashboard() {
   if (!user) return null
 
   const todayStr = new Date().toISOString().split('T')[0]
-  const checkedInToday = checkins.some(c => c.date === todayStr)
   const workedOutToday = workouts.some(w => w.date === todayStr)
-  const streak = calcStreak(checkins)
-  const latestWeight = checkins[0]?.weight
-  const startWeight = checkins[checkins.length - 1]?.weight
-  const weightLost = startWeight && latestWeight ? Math.max(0, startWeight - latestWeight) : 0
+  const checkedInToday = checkins.some(c => c.date === todayStr)
+  const streak        = calcStreak(checkins)
+  const { week, day } = calcWeekAndDay(checkins)
+  const weeksLeft     = TOTAL_WEEKS - week
+  const { label: phaseLabel } = getPhase(week)
+  const firstName     = (user.name as string)?.split(' ')[0] ?? user.name
+  const headline      = getMilestone(day, firstName)
 
-  const dateStr = new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' })
+  const latestWeight  = checkins[0]?.weight
+  const prevWeight    = checkins[1]?.weight
+  const weightDiff    = (latestWeight != null && prevWeight != null)
+    ? (latestWeight - prevWeight).toFixed(1)
+    : null
+
+  // progress bar
+  const filledSegs = Math.round((week / TOTAL_WEEKS) * 12)
+
+  const coachMessage = checkedInToday
+    ? `Solid check-in today, ${firstName}. Keep that momentum going.`
+    : `Don't forget your morning check-in, ${firstName}. Your streak depends on it.`
 
   return (
-    <div className="page-main">
+    <div className="page-main" style={S.page}>
       <Nav role="client" />
-      <div style={{ padding:'1.5rem', maxWidth:'820px' }}>
 
-        {/* ── Header ── */}
-        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'1.5rem' }}>
-          <div>
-            <p style={{ fontSize:'0.8rem', color:'#AAA', marginBottom:'0.2rem', fontWeight:'500' }}>{dateStr}</p>
-            <h1 style={{ fontSize:'1.7rem', fontWeight:'800', lineHeight:1.1 }}>
-              {getGreeting()},<br/>
-              <span style={{ color:'#FFE000' }}>{user.name}</span>
-            </h1>
-          </div>
-          <div style={{ background: streak > 0 ? '#FFE000' : '#F0F2F8', borderRadius:'14px', padding:'0.6rem 0.85rem', textAlign:'center', minWidth:'58px', boxShadow: streak > 0 ? '0 4px 12px rgba(255,224,0,0.3)' : 'none' }}>
-            <Flame size={22} style={{ color: streak > 0 ? '#1A1A1A' : '#CCC' }} />
-            <div style={{ fontSize:'0.75rem', fontWeight:'800', color: streak > 0 ? '#1A1A1A' : '#AAA', marginTop:'0.2rem' }}>{streak}d</div>
-          </div>
-        </div>
+      <div style={S.inner}>
 
-        {/* ── Check-in reminder banner ── */}
-        {!checkedInToday && (
-          <div onClick={() => router.push('/checkin')}
-            style={{ display:'flex', alignItems:'center', gap:'1rem', padding:'1rem 1.25rem', marginBottom:'1.25rem',
-              background:'#1A1A1A', borderRadius:'16px', cursor:'pointer', transition:'opacity 0.15s' }}>
-            <div style={{ width:'44px', height:'44px', borderRadius:'50%', background:'rgba(255,224,0,0.18)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-              <Camera size={20} style={{ color:'#FFE000' }} />
-            </div>
-            <div style={{ flex:1 }}>
-              <div style={{ fontWeight:'700', fontSize:'0.92rem', color:'#FFFFFF' }}>Log your weight today</div>
-              <div style={{ fontSize:'0.76rem', color:'#888', marginTop:'0.1rem' }}>Keep your streak alive. Takes 30 seconds.</div>
-            </div>
-            <ChevronRight size={18} style={{ color:'#FFE000', flexShrink:0 }} />
-          </div>
-        )}
+        {/* ── 1. Photo band ─────────────────────────────────── */}
+        <div style={S.band}>
+          <img
+            src="/coach.png"
+            alt="Coach"
+            style={S.bandImg}
+            onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+          />
 
-        {/* ── Workout hero card ── */}
-        <div className="hero-card" style={{ marginBottom:'1.25rem' }}>
-          <div style={{ position:'relative', zIndex:1 }}>
-            <div style={{ fontSize:'0.68rem', color:'#FFE000', fontWeight:'800', textTransform:'uppercase', letterSpacing:'0.14em', marginBottom:'0.6rem' }}>
-              Today's Workout Plan
-            </div>
-            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
-              <div>
-                <div style={{ fontSize:'1.6rem', fontWeight:'800', lineHeight:1.15, color:'#FFFFFF', marginBottom:'0.75rem' }}>
-                  Full Body<br/>
-                  <span style={{ color:'#FFE000' }}>Reset</span>
-                </div>
-                <div style={{ display:'flex', gap:'1.25rem', marginBottom:'1.25rem' }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:'0.35rem', fontSize:'0.8rem', color:'#999' }}>
-                    <Clock size={13} style={{ color:'#FFE000' }}/> 45 min
-                  </div>
-                  <div style={{ display:'flex', alignItems:'center', gap:'0.35rem', fontSize:'0.8rem', color:'#999' }}>
-                    <Flame size={13} style={{ color:'#FFE000' }}/> 6 muscle groups
-                  </div>
-                </div>
-                <div style={{ display:'flex', gap:'0.75rem' }}>
-                  <button onClick={() => router.push('/plan')}
-                    style={{ background:'#FFE000', color:'#1A1A1A', border:'none', borderRadius:'10px', padding:'0.65rem 1.3rem', fontWeight:'800', fontSize:'0.88rem', cursor:'pointer' }}>
-                    View Plan
-                  </button>
-                  <button onClick={() => router.push('/workout')}
-                    style={{ background:'rgba(255,255,255,0.1)', color:'#FFFFFF', border:'1px solid rgba(255,255,255,0.2)', borderRadius:'10px', padding:'0.65rem 1rem', fontWeight:'600', fontSize:'0.88rem', cursor:'pointer' }}>
-                    Log Workout
-                  </button>
-                </div>
-              </div>
-              {/* Workout count badge */}
-              <div style={{ textAlign:'center', background:'rgba(255,224,0,0.12)', borderRadius:'14px', padding:'0.85rem 1rem', border:'1px solid rgba(255,224,0,0.2)', flexShrink:0 }}>
-                <div style={{ fontSize:'1.6rem', fontWeight:'800', color:'#FFE000', lineHeight:1 }}>{workouts.length}</div>
-                <div style={{ fontSize:'0.62rem', color:'#999', marginTop:'0.25rem', lineHeight:1.3 }}>sessions<br/>logged</div>
-              </div>
-            </div>
-          </div>
-        </div>
+          {/* Overlays — pointer-events: none on wrapper, auto on avatar */}
+          <div style={S.bandOverlays}>
+            {/* Week pill */}
+            <div style={S.pill}>WEEK {week} / {TOTAL_WEEKS}</div>
 
-        {/* ── Stats row ── */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'0.75rem', marginBottom:'1.25rem' }}>
-          <StatCard icon={<Scale size={20}/>} value={latestWeight ? `${latestWeight}` : '—'} unit="kg" label="Current Weight" color="#FFE000" />
-          <StatCard icon={<TrendingDown size={20}/>} value={weightLost > 0 ? `${weightLost.toFixed(1)}` : '0'} unit="kg lost" label="Since You Started" color="#4ade80" />
-          <StatCard icon={<Dumbbell size={20}/>} value={`${workouts.length}`} unit="sessions" label="Total Logged" color="#60a5fa" />
-        </div>
-
-        {/* ── Nutrition goals ── */}
-        <div className="card" style={{ marginBottom:'1.25rem' }}>
-          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'1.25rem' }}>
-            <div>
-              <div className="section-title">Nutrition Guide</div>
-              <p style={{ fontSize:'0.75rem', color:'#AAA', marginTop:'0.15rem' }}>Daily targets from your program</p>
-            </div>
-            <button onClick={() => router.push('/ai-coach')}
-              style={{ background:'#F4F5FA', border:'1px solid #E2E4EC', borderRadius:'10px', padding:'0.4rem 0.85rem', fontSize:'0.75rem', color:'#555', cursor:'pointer', fontWeight:'600', whiteSpace:'nowrap' }}>
-              <Bot size={13} style={{ display:'inline', marginRight:'0.3rem' }}/> Ask AI
+            {/* User avatar */}
+            <button
+              style={S.avatar}
+              onClick={() => router.push('/profile')}
+              aria-label="Profile"
+            >
+              {firstName[0]?.toUpperCase()}
             </button>
           </div>
-          <div style={{ display:'flex', justifyContent:'space-around', alignItems:'flex-start' }}>
-            <MacroRing value={120} max={160} label="Protein" color="#FFE000" unit="g" />
-            <MacroRing value={30}  max={80}  label="Carbs"   color="#f87171" unit="g" />
-            <MacroRing value={50}  max={70}  label="Healthy Fat" color="#60a5fa" unit="g" />
-            <MacroRing value={1400} max={1600} label="Calories" color="#4ade80" unit="cal" />
-          </div>
-          <p style={{ fontSize:'0.71rem', color:'#CCC', marginTop:'1.1rem', textAlign:'center' }}>
-            Send food photos to your AI coach for real-time meal tracking
-          </p>
         </div>
 
-        {/* ── Today's tasks ── */}
-        <div className="card" style={{ marginBottom:'1.25rem' }}>
-          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1rem' }}>
-            <div className="section-title">Today's Tasks</div>
-            <span style={{ fontSize:'0.75rem', color:'#888' }}>
-              {[checkedInToday, workedOutToday].filter(Boolean).length}/2 done
-            </span>
+        {/* ── 2. Title block ─────────────────────────────────── */}
+        <div style={S.titleBlock}>
+          <div style={S.eyebrow}>{getDayLabel(day)}</div>
+          <div style={S.headline}>{headline}</div>
+        </div>
+
+        {/* ── 3. Week bar ────────────────────────────────────── */}
+        <div style={S.weekBarWrap}>
+          <div style={S.weekBarSegments}>
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} style={{
+                flex: 1, height: 5, borderRadius: 99,
+                background: i < filledSegs ? '#1A1A1A' : '#E6E7ED',
+              }} />
+            ))}
           </div>
-          <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem' }}>
-            <TaskRow done={checkedInToday} label="Daily Check-In" sub="Log your morning weight"
-              action={() => router.push('/checkin')} icon={<Camera size={18}/>} />
-            <TaskRow done={workedOutToday} label="Log Workout" sub="Record today's session"
-              action={() => router.push('/workout')} icon={<Dumbbell size={18}/>} />
+          <div style={S.weekBarCaption}>
+            <span style={S.weekCaption}>PHASE {getPhase(week).phase} · {phaseLabel}</span>
+            <span style={S.weekCaption}>{weeksLeft} WEEKS LEFT</span>
           </div>
         </div>
 
-        {/* ── Quick access cards ── */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:'0.75rem', marginBottom:'1.25rem' }}>
-          {[
-            { label:'AI Coach', sub:'Get real feedback', icon:<Bot size={20}/>, color:'rgba(255,224,0,0.15)', iconColor:'#997700', href:'/ai-coach' },
-            { label:'Cycle Tracker', sub:'Hormones & cravings', icon:<Heart size={20}/>, color:'rgba(248,113,113,0.12)', iconColor:'#dc2626', href:'/cycle' },
-            { label:'Workout Plan', sub:'6 muscle groups', icon:<ListChecks size={20}/>, color:'rgba(96,165,250,0.12)', iconColor:'#2563eb', href:'/plan' },
-            { label:'Community', sub:'Share your wins', icon:<Star size={20}/>, color:'rgba(74,222,128,0.12)', iconColor:'#16a34a', href:'/community' },
-          ].map(q => (
-            <div key={q.href} className="card" onClick={() => router.push(q.href)}
-              style={{ cursor:'pointer', display:'flex', alignItems:'center', gap:'0.85rem', padding:'1rem', transition:'box-shadow 0.15s' }}>
-              <div style={{ width:'42px', height:'42px', borderRadius:'12px', background:q.color, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, color:q.iconColor }}>
-                {q.icon}
+        {/* ── 4. Session card ────────────────────────────────── */}
+        <div style={S.section}>
+          <div style={S.sessionCard}>
+            <div style={S.sessionBody}>
+              {/* Text column */}
+              <div style={S.sessionText}>
+                <div style={S.sessionEyebrow}>TODAY'S SESSION</div>
+                <div style={S.sessionTitle}>Full Body{'\n'}Reset</div>
+                <div style={S.sessionMeta}>
+                  45 min
+                  <span style={S.sessionSep}>·</span>
+                  6 groups
+                  <span style={S.sessionSep}>·</span>
+                  17 sets
+                </div>
               </div>
-              <div>
-                <div style={{ fontWeight:'700', fontSize:'0.88rem' }}>{q.label}</div>
-                <div style={{ fontSize:'0.72rem', color:'#999', marginTop:'0.1rem' }}>{q.sub}</div>
+
+              {/* Photo slot */}
+              <div style={S.sessionPhoto}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C2C3CC" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6.5 6.5h.01M3 8l2-3h14l2 3v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                  <circle cx="12" cy="13" r="3"/>
+                </svg>
               </div>
             </div>
-          ))}
+
+            {/* Footer buttons */}
+            <div style={S.sessionFooter}>
+              <button
+                style={S.btnPrimary}
+                onClick={() => router.push('/workout')}
+              >
+                {workedOutToday ? 'Logged ✓' : 'Start session'}
+              </button>
+              <button
+                style={S.btnSecondary}
+                onClick={() => router.push('/plan')}
+              >
+                Plan
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* ── Recent check-ins ── */}
-        <div className="card" style={{ marginBottom:'1rem' }}>
-          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1rem' }}>
-            <div className="section-title">Recent Check-Ins</div>
-            <button className="btn-ghost" style={{ fontSize:'0.78rem', padding:'0.3rem 0.8rem' }} onClick={() => router.push('/progress')}>
-              See all
+        {/* ── 5. Stat tiles ──────────────────────────────────── */}
+        <div style={{ ...S.section, marginTop: 9 }}>
+          <div style={S.tilesGrid}>
+
+            {/* Weight */}
+            <div style={S.tile}>
+              <div style={S.tileValue}>{latestWeight ?? '—'}</div>
+              <div style={S.tileLabel}>Weight KG</div>
+              {weightDiff != null && (
+                <div style={{
+                  ...S.tileDelta,
+                  color: parseFloat(weightDiff) < 0 ? '#1F9D53'
+                       : parseFloat(weightDiff) > 0 ? '#D2603F'
+                       : '#9A8500',
+                }}>
+                  {parseFloat(weightDiff) > 0 ? '+' : ''}{weightDiff} wk
+                </div>
+              )}
+            </div>
+
+            {/* Meals */}
+            <div style={S.tile} onClick={() => router.push('/meals')}>
+              <div style={S.tileValue}>2/4</div>
+              <div style={S.tileLabel}>Meals</div>
+              <div style={{ ...S.tileDelta, color: '#9A8500' }}>2 to go</div>
+            </div>
+
+            {/* Streak — inverted */}
+            <div style={S.tileDark}>
+              <div style={S.tileValueDark}>{streak}</div>
+              <div style={S.tileLabelDark}>Day Streak</div>
+              <div style={{ ...S.tileDelta, color: 'rgba(255,255,255,.4)', fontSize: 9 }}>
+                {streak > 0 ? 'keep going' : 'start today'}
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* ── 6. Coach note card ─────────────────────────────── */}
+        <div style={S.section}>
+          <div style={S.coachCard}>
+            <div style={S.coachHeader}>
+              {/* Coach avatar */}
+              <div style={S.coachAvatar}>
+                <img
+                  src="/coach.png"
+                  alt="Coach Jeyvi"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={e => {
+                    const el = e.target as HTMLImageElement
+                    el.style.display = 'none'
+                    if (el.parentElement) el.parentElement.style.background = '#FFE000'
+                  }}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={S.coachName}>Coach Jeyvi</div>
+                <div style={S.coachTime}>Today</div>
+              </div>
+            </div>
+
+            <div style={S.coachBody}>{coachMessage}</div>
+
+            <button style={S.replyBtn} onClick={() => router.push('/checkin')}>
+              Reply
             </button>
           </div>
-          {checkins.length === 0
-            ? <div style={{ textAlign:'center', padding:'1.5rem', color:'#CCC' }}>
-                <Camera size={32} style={{ margin:'0 auto 0.75rem', color:'#E2E4EC' }}/>
-                <p style={{ fontSize:'0.88rem' }}>No check-ins yet. Start today.</p>
-              </div>
-            : checkins.slice(0,5).map((c, idx) => {
-                const prev = checkins[idx + 1]
-                const diff = prev ? c.weight - prev.weight : 0
-                return (
-                  <div key={c.id} style={{ display:'flex', justifyContent:'space-between', alignItems:'center',
-                    padding:'0.75rem 0', borderBottom: idx < 4 ? '1px solid #F4F5FA' : 'none' }}>
-                    <div>
-                      <div style={{ fontSize:'0.88rem', fontWeight:'600' }}>{c.date}</div>
-                      {c.coach_feedback && <div style={{ fontSize:'0.73rem', color:'#888', marginTop:'0.1rem', display:'flex', alignItems:'center', gap:'0.25rem' }}><MessageSquare size={11}/> {c.coach_feedback}</div>}
-                    </div>
-                    <div style={{ textAlign:'right', display:'flex', alignItems:'center', gap:'0.75rem' }}>
-                      <div>
-                        <div style={{ fontSize:'1.05rem', fontWeight:'800', color:'#FFE000' }}>{c.weight} kg</div>
-                        {prev && <div style={{ fontSize:'0.72rem', color: diff < 0 ? '#16a34a' : diff > 0 ? '#dc2626' : '#888', fontWeight:'600' }}>
-                          {diff > 0 ? `+${diff.toFixed(1)}` : diff.toFixed(1)} kg
-                        </div>}
-                      </div>
-                      <span className={`badge badge-${c.reviewed ? 'green' : 'gray'}`}>
-                        {c.reviewed ? '✓' : '···'}
-                      </span>
-                    </div>
-                  </div>
-                )
-              })
-          }
         </div>
 
       </div>

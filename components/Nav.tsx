@@ -125,33 +125,80 @@ export default function Nav({ role }: { role: 'client'|'coach'|'admin' }) {
 
       {/* ── Bottom nav — client mobile only ── */}
       {role === 'client' && (
-        <nav className="bottom-nav">
-          <button className={`bottom-nav-btn ${isActive('/dashboard') ? 'active' : ''}`}
-            onClick={() => navigate('/dashboard')}>
-            <Home size={22} />
-            Home
+        <nav className="bottom-nav" style={{
+          borderTop: '1px solid #ECEDF2',
+          padding: '9px 12px 22px',
+          height: 'auto',
+          gap: 0,
+        }}>
+          {/* Today */}
+          <button
+            onClick={() => navigate('/dashboard')}
+            style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+              background: 'transparent', border: 'none', cursor: 'pointer',
+              padding: '0 8px',
+              color: isActive('/dashboard') ? '#1A1A1A' : '#A9A9B2',
+              fontWeight: 800, fontSize: 9, letterSpacing: '0.04em',
+            }}>
+            <Home size={21} strokeWidth={1.7} />
+            Today
           </button>
 
-          <button className={`bottom-nav-btn ${isActive('/meals') ? 'active' : ''}`}
-            onClick={() => navigate('/meals')}>
-            <UtensilsCrossed size={22} />
+          {/* Train */}
+          <button
+            onClick={() => navigate('/plan')}
+            style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+              background: 'transparent', border: 'none', cursor: 'pointer',
+              padding: '0 8px',
+              color: isActive('/plan') || isActive('/workout') ? '#1A1A1A' : '#A9A9B2',
+              fontWeight: 800, fontSize: 9, letterSpacing: '0.04em',
+            }}>
+            <Dumbbell size={21} strokeWidth={1.7} />
+            Train
+          </button>
+
+          {/* Center — Check-in FAB */}
+          <button
+            onClick={() => navigate('/checkin')}
+            aria-label="Check-in"
+            style={{
+              width: 54, height: 54, borderRadius: '50%',
+              background: '#FFE000', border: 'none',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', flexShrink: 0,
+              boxShadow: '0 6px 20px rgba(255,224,0,.55)',
+            }}>
+            <Camera size={22} strokeWidth={1.7} style={{ color: '#1A1A1A' }} />
+          </button>
+
+          {/* Progress */}
+          <button
+            onClick={() => navigate('/progress')}
+            style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+              background: 'transparent', border: 'none', cursor: 'pointer',
+              padding: '0 8px',
+              color: isActive('/progress') ? '#1A1A1A' : '#A9A9B2',
+              fontWeight: 800, fontSize: 9, letterSpacing: '0.04em',
+            }}>
+            <TrendingUp size={21} strokeWidth={1.7} />
+            Progress
+          </button>
+
+          {/* Meals */}
+          <button
+            onClick={() => navigate('/meals')}
+            style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+              background: 'transparent', border: 'none', cursor: 'pointer',
+              padding: '0 8px',
+              color: isActive('/meals') ? '#1A1A1A' : '#A9A9B2',
+              fontWeight: 800, fontSize: 9, letterSpacing: '0.04em',
+            }}>
+            <UtensilsCrossed size={21} strokeWidth={1.7} />
             Meals
-          </button>
-
-          {/* Center AI Coach button */}
-          <button className="bottom-nav-center" onClick={() => navigate('/ai-coach')} aria-label="AI Coach">
-            <Bot size={24} style={{ color:'#1A1A1A' }} />
-          </button>
-
-          <button className={`bottom-nav-btn ${isActive('/checkin') ? 'active' : ''}`}
-            onClick={() => navigate('/checkin')}>
-            <Camera size={22} />
-            Check-In
-          </button>
-
-          <button className="bottom-nav-btn" onClick={() => setOpen(true)}>
-            <Menu size={22} />
-            More
           </button>
         </nav>
       )}
